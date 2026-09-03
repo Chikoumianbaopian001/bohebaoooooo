@@ -388,9 +388,13 @@
                     <img src="https://nos.netease.com/ysf/790a3f898f1b53298ee4253f1b68deb8.png" alt="表情">
                 </span>
                 <span class="chat-send-btn" id="send-btn" style="display:none;" onclick="sendChatMessage()">发送</span>
-                <span class="chat-stop-btn" id="stop-btn" onclick="stopGeneration()">
-                    <img src="https://nos.netease.com/ysf/bc9b3b93980711c0d00fb7e56fbaffa8.png" alt="终止">
-                </span>
+				<span class="chat-reply-btn" id="reply-btn" style="display:none;" onclick="triggerAIReply()">
+				    <img src="https://nos.netease.com/ysf/7ee5609b41ef4536c74fb34ebaa01de1.png" alt="回复">
+				</span>
+				<span class="chat-stop-btn" id="stop-btn" style="display:none;" onclick="stopGeneration()">
+				    <img src="https://nos.netease.com/ysf/bc9b3b93980711c0d00fb7e56fbaffa8.png" alt="终止">
+				</span>
+
                 <span class="chat-tool-btn" id="plus-btn" onclick="togglePlus()">
                     <img src="https://nos.netease.com/ysf/c7604fd01eeaa94a64d283ee1c22c4ac.png" alt="更多">
                 </span>
@@ -868,7 +872,10 @@
                 <div class="cs-card-title">主 API</div>
                 <div class="cs-input-group">
                     <label class="cs-input-label">API Key</label>
-                    <input type="password" class="cs-text-input" id="global-api-key" placeholder="输入API Key">
+                    <input type="text" class="cs-text-input" id="global-api-key" 
+				       placeholder="输入API Key" 
+				       autocomplete="off"
+				       style="-webkit-text-security: disc;">
                 </div>
                 <div class="cs-input-group">
                     <label class="cs-input-label">API 地址</label>
@@ -955,3 +962,4 @@
     <script src="js/worldbook.js"></script>
 </body>
 </html>
+
