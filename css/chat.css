@@ -1746,4 +1746,21 @@
 
 .chat-stop-btn:active {
     opacity: 0.7;
+}/* ===== AI回复按钮 ===== */
+.chat-reply-btn {
+    cursor: pointer;
+    flex-shrink: 0;
+    padding: 2px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.chat-reply-btn img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
+.chat-reply-btn:active {
+    opacity: 0.7;
 }
