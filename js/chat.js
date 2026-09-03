@@ -46,108 +46,32 @@ function getAPISettings() {
 }
 
 // ===== 发送消息 =====
+// ===== 发送消息（只发用户消息，不触发AI） =====
 async function sendChatMessage() {
     const input = document.getElementById('chat-input');
     const text = input.value.trim();
     if (!text) return;
 
-    const apiSettings = getAPISettings();
-    if (!apiSettings.apiKey) {
-        showToast('请先在设置中填写API Key');
-        return;
-    }
-
-    // 清空输入框并切换按钮
     input.value = '';
     onChatInputChange();
 
-    // 关闭面板
     document.getElementById('emoji-panel').style.display = 'none';
     document.getElementById('plus-panel').style.display = 'none';
 
-    // 显示用户消息
     appendMessage(text, 'user');
 
-    // 保存到历史
     const history = getChatHistory();
     history.push({ role: 'user', content: text, time: Date.now() });
-
-    // 显示加载 + 切换到终止按钮
-    const loadingEl = appendLoading();
-    showStopButton();
-    isGenerating = true;
-    abortController = new AbortController();
-
-    try {
-        const messages = buildMessages(history);
-
-        // 先尝试主API
-        let data = await callAPI(apiSettings.apiKey, apiSettings.apiUrl, apiSettings.apiModel, messages, abortController.signal);
-
-        // 主API失败且有副API时切换
-        if (!data && apiSettings.subApiKey && apiSettings.subApiUrl && isGenerating) {
-            appendSystemMsg('⚠️ 主API不可用，切换到副API...');
-            data = await callAPI(apiSettings.subApiKey, apiSettings.subApiUrl, apiSettings.subApiModel || apiSettings.apiModel, messages, abortController.signal);
-        }
-
-        loadingEl.remove();
-
-        if (!isGenerating) {
-            // 被用户终止了
-            appendSystemMsg('⏹ 已终止生成');
-            hideStopButton();
-            saveChatHistory(currentChatAI, history);
-            return;
-        }
-
-        if (data && data.choices && data.choices[0]) {
-            const rawReply = data.choices[0].message.content;
-            const parsed = parseAIResponse(rawReply);
-
-            const chatSettings = getChatSettings();
-            const minCount = parseInt(chatSettings.replyMin) || 1;
-            const maxCount = parseInt(chatSettings.replyMax) || 1;
-            const replyCount = Math.floor(Math.random() * (maxCount - minCount + 1)) + minCount;
-
-            const replies = splitReply(parsed.reply, replyCount);
-
-            for (let i = 0; i < replies.length; i++) {
-                if (!isGenerating) break;
-                await delay(300 + Math.random() * 700);
-                if (!isGenerating) break;
-                const msgEl = appendMessage(replies[i], 'ai');
-                if (chatSettings.translate && needsTranslation(replies[i])) {
-                    await translateAndAppend(replies[i], msgEl);
-                }
-            }
-
-            history.push({ role: 'assistant', content: parsed.reply, time: Date.now() });
-            saveChatHistory(currentChatAI, history);
-            if (parsed.heartData.heart) saveHeartHistory(parsed.heartData);
-            checkAutoSummary(history);
-            updateChatListPreview(parsed.reply);
-        } else {
-            appendSystemMsg('❌ 请求失败，请检查API设置');
-        }
-
-    } catch (err) {
-        loadingEl.remove();
-        if (err.name === 'AbortError') {
-            appendSystemMsg('⏹ 已终止生成');
-        } else {
-            appendSystemMsg('❌ 网络错误：' + err.message);
-        }
-    }
-
-    isGenerating = false;
-    hideStopButton();
     saveChatHistory(currentChatAI, history);
+
+    updateChatListPreview(text);
+    onChatInputChange(); // 更新按钮状态，会显示回复按钮
 }
 
 // 调用API（带错误处理）
 async function callAPI(apiKey, apiUrl, model, messages, signal) {
     try {
-        let url = apiUrl.replace(/\/+$/, '');
+        var url = apiUrl.replace(/\/+$/, '');
         if (!url.endsWith('/chat/completions')) {
             if (!url.endsWith('/v1')) {
                 url = url + '/v1';
@@ -155,23 +79,47 @@ async function callAPI(apiKey, apiUrl, model, messages, signal) {
             url = url + '/chat/completions';
         }
 
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + apiKey
-            },
-            body: JSON.stringify({
-                model: model,
-                messages: messages
-            }),
-            signal: signal
-        });
+        console.log('请求URL:', url);
 
-        const data = await response.json();
+        var response;
+
+        // 先直接请求
+        try {
+            response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + apiKey
+                },
+                body: JSON.stringify({
+                    model: model,
+                    messages: messages
+                }),
+                signal: signal
+            });
+        } catch (directErr) {
+            // 直接请求失败，尝试CORS代理
+            console.warn('直接请求失败，尝试代理:', directErr.message);
+            response = await fetch('https://corsproxy.io/?' + encodeURIComponent(url), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + apiKey
+                },
+                body: JSON.stringify({
+                    model: model,
+                    messages: messages
+                }),
+                signal: signal
+            });
+        }
+
+        console.log('响应状态:', response.status);
+        var data = await response.json();
 
         if (data.error) {
             console.error('API错误:', data.error.message);
+            appendSystemMsg('⚠️ API错误：' + data.error.message);
             return null;
         }
 
@@ -184,24 +132,25 @@ async function callAPI(apiKey, apiUrl, model, messages, signal) {
 }
 
 // ===== 构建发送给API的消息 =====
-function buildMessages(history) {
+// 修复 buildMessages 函数，添加 userMessage 参数
+
+function buildMessages(history, userMessage) {
     const chatSettings = getChatSettings();
 
-    // 构建系统提示词
     // 获取当前AI的人设
-	var aiPersona = '';
-	var contacts = getContacts();
-	var currentContact = contacts.find(function(c) { return c.id === currentChatAI; });
-	if (currentContact && currentContact.persona) {
-	    aiPersona = currentContact.persona;
-	}
-	
-	const systemPrompt = buildSystemPrompt({
-	    scene: 'online',
-	    aiPersona: aiPersona,
-	    userPersona: '',
-	    worldBooks: getEnabledWorldBooks(text)
-	});
+    var aiPersona = '';
+    var contacts = getContacts();
+    var currentContact = contacts.find(function(c) { return c.id === currentChatAI; });
+    if (currentContact && currentContact.persona) {
+        aiPersona = currentContact.persona;
+    }
+    
+    const systemPrompt = buildSystemPrompt({
+        scene: 'online',
+        aiPersona: aiPersona,
+        userPersona: '',
+        worldBooks: getEnabledWorldBooks(userMessage || '')  // ← 修复：用参数代替未定义的text
+    });
 
     // 时间感知
     let timeInfo = '';
@@ -577,6 +526,91 @@ function loadChatMessages(aiId) {
     // 滚动到底部
     container.scrollTop = container.scrollHeight;
 }
+// ===== 手动触发AI回复 =====
+function triggerAIReply() {
+    if (isGenerating) return;
+
+    var apiSettings = getAPISettings();
+    if (!apiSettings.apiKey) {
+        showToast('请先在设置中填写API Key');
+        return;
+    }
+
+    var history = getChatHistory();
+    if (history.length === 0 || history[history.length - 1].role !== 'user') {
+        showToast('请先发送消息');
+        return;
+    }
+
+    // 复用原有发送逻辑，但不发用户消息
+    var loadingEl = appendLoading();
+    showStopButton();
+    isGenerating = true;
+    abortController = new AbortController();
+
+    (async function() {
+        try {
+            var lastUserMsg = history.filter(function(h) { return h.role === 'user'; }).pop();
+            var messages = buildMessages(history, lastUserMsg ? lastUserMsg.content : '');
+
+            var data = await callAPI(apiSettings.apiKey, apiSettings.apiUrl, apiSettings.apiModel, messages, abortController.signal);
+
+            if (!data && apiSettings.subApiKey && apiSettings.subApiUrl && isGenerating) {
+                appendSystemMsg('⚠️ 主API不可用，切换到副API...');
+                data = await callAPI(apiSettings.subApiKey, apiSettings.subApiUrl, apiSettings.subApiModel || apiSettings.apiModel, messages, abortController.signal);
+            }
+
+            loadingEl.remove();
+
+            if (!isGenerating) {
+                appendSystemMsg('⏹ 已终止生成');
+                hideStopButton();
+                saveChatHistory(currentChatAI, history);
+                return;
+            }
+
+            if (data && data.choices && data.choices[0]) {
+                var rawReply = data.choices[0].message.content;
+                var parsed = parseAIResponse(rawReply);
+                var chatSettings = getChatSettings();
+                var minCount = parseInt(chatSettings.replyMin) || 1;
+                var maxCount = parseInt(chatSettings.replyMax) || 1;
+                var replyCount = Math.floor(Math.random() * (maxCount - minCount + 1)) + minCount;
+                var replies = splitReply(parsed.reply, replyCount);
+
+                for (var i = 0; i < replies.length; i++) {
+                    if (!isGenerating) break;
+                    await delay(300 + Math.random() * 700);
+                    if (!isGenerating) break;
+                    var msgEl = appendMessage(replies[i], 'ai');
+                    if (chatSettings.translate && needsTranslation(replies[i])) {
+                        await translateAndAppend(replies[i], msgEl);
+                    }
+                }
+
+                history.push({ role: 'assistant', content: parsed.reply, time: Date.now() });
+                saveChatHistory(currentChatAI, history);
+                if (parsed.heartData.heart) saveHeartHistory(parsed.heartData);
+                checkAutoSummary(history);
+                updateChatListPreview(parsed.reply);
+            } else {
+                appendSystemMsg('❌ 请求失败，请检查API设置');
+            }
+        } catch (err) {
+            loadingEl.remove();
+            if (err.name === 'AbortError') {
+                appendSystemMsg('⏹ 已终止生成');
+            } else {
+                appendSystemMsg('❌ 错误：' + err.message);
+            }
+        }
+
+        isGenerating = false;
+        hideStopButton();
+        saveChatHistory(currentChatAI, history);
+    })();
+}
+
 // ===== 终止生成 =====
 function stopGeneration() {
     isGenerating = false;
@@ -586,32 +620,44 @@ function stopGeneration() {
     }
 }
 
-// ===== 输入框按钮切换（发送和终止共用位置，加号始终显示） =====
+// ===== 输入框按钮切换 =====
 function onChatInputChange() {
     var input = document.getElementById('chat-input');
     var text = input ? input.value.trim() : '';
     var sendBtn = document.getElementById('send-btn');
+    var replyBtn = document.getElementById('reply-btn');
     var stopBtn = document.getElementById('stop-btn');
 
-    if (text.length > 0) {
-        // 有文字 → 显示发送，隐藏终止
-        if (sendBtn) sendBtn.style.display = 'inline-block';
-        if (stopBtn) stopBtn.style.display = 'none';
-    } else {
-        // 无文字 → 显示终止，隐藏发送
-        if (sendBtn) sendBtn.style.display = 'none';
+    // 先全部隐藏
+    if (sendBtn) sendBtn.style.display = 'none';
+    if (replyBtn) replyBtn.style.display = 'none';
+    if (stopBtn) stopBtn.style.display = 'none';
+
+    if (isGenerating) {
         if (stopBtn) stopBtn.style.display = 'inline-flex';
+    } else if (text.length > 0) {
+        if (sendBtn) sendBtn.style.display = 'inline-block';
+    } else {
+        // 无文字：检查最后一条消息
+        var history = getChatHistory();
+        var lastMsg = history.length > 0 ? history[history.length - 1] : null;
+        if (lastMsg && lastMsg.role === 'user') {
+            if (replyBtn) replyBtn.style.display = 'inline-flex';
+        } else {
+            if (stopBtn) stopBtn.style.display = 'inline-flex';
+        }
     }
 }
 
 function showStopButton() {
     var sendBtn = document.getElementById('send-btn');
+    var replyBtn = document.getElementById('reply-btn');
     var stopBtn = document.getElementById('stop-btn');
     if (sendBtn) sendBtn.style.display = 'none';
+    if (replyBtn) replyBtn.style.display = 'none';
     if (stopBtn) stopBtn.style.display = 'inline-flex';
 }
 
 function hideStopButton() {
     onChatInputChange();
 }
-
