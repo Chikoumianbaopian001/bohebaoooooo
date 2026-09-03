@@ -1,0 +1,184 @@
+/* ===== 基础重置 ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", sans-serif;
+    font-size: 16px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* ===== 页面切换基础 ===== */
+.page {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.page.active {
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===== 通用滚动容器 ===== */
+.scrollable {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ===== 通用按钮样式 ===== */
+button {
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+input, textarea {
+    border: none;
+    outline: none;
+    font-family: inherit;
+}
+
+/* ===== 过渡动画 ===== */
+.page-transition {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+@keyframes slideLeft {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+/* ===== 仿iOS状态栏 ===== */
+.status-bar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px 8px;
+    font-size: 14px;
+    color: #333;
+    position: relative;
+    z-index: 10;
+}
+
+.status-left {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.status-time-small {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.status-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.status-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+/* 信号图标 - 仿iOS四格 */
+.signal-icon {
+    display: flex;
+    align-items: flex-end;
+    gap: 1.5px;
+    height: 12px;
+}
+
+.signal-bar {
+    width: 3px;
+    background: #333;
+    border-radius: 1px;
+}
+
+.signal-bar.bar-1 { height: 3px; }
+.signal-bar.bar-2 { height: 5px; }
+.signal-bar.bar-3 { height: 8px; }
+.signal-bar.bar-4 { height: 11px; }
+
+/* WiFi图标 */
+.status-wifi {
+    display: flex;
+    align-items: center;
+}
+
+.status-wifi svg {
+    display: block;
+}
+
+/* 电池图标 - 仿iOS */
+.battery-icon {
+    display: flex;
+    align-items: center;
+}
+
+.battery-body {
+    width: 24px;
+    height: 12px;
+    border: 1.5px solid rgba(0, 0, 0, 0.7);
+    border-radius: 3px;
+    padding: 1.5px;
+    position: relative;
+}
+
+.battery-level {
+    height: 100%;
+    width: 100%;
+    background: #333;
+    border-radius: 1px;
+    transition: width 0.5s ease, background-color 0.5s ease;
+}
+
+.battery-tip {
+    width: 2px;
+    height: 5px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 0 1px 1px 0;
+    margin-left: 1px;
+}
+
+
+.battery-percent {
+    font-size: 12px;
+    font-weight: 500;
+    opacity: 0.9;
+}
+
+/* 电池低电量变色 */
+.battery-low .battery-level {
+    background: #ff3b30;
+}
+
+.battery-charging .battery-level {
+    background: #30d158;
+}

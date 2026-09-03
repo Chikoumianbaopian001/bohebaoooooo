@@ -1,0 +1,68 @@
+/* ===== 锁屏页面 ===== */
+#page-lockscreen {
+    background: #DEF3F3;
+    color: #333;
+    justify-content: flex-start;
+    align-items: center;
+    user-select: none;
+}
+
+/* 中间时间区域 - 中间靠上 */
+.lock-main {
+    text-align: center;
+    margin-top: 15vh;
+}
+
+.lock-time {
+    font-size: 76px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.lock-date {
+    font-size: 17px;
+    opacity: 0.75;
+    margin-top: 8px;
+}
+
+/* 底部上划提示 */
+.lock-bottom {
+    position: absolute;
+    bottom: 40px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.lock-swipe-hint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    opacity: 0.6;
+    animation: floatUp 2s ease-in-out infinite;
+}
+
+.lock-swipe-hint span {
+    font-size: 13px;
+    color: #666;
+}
+
+.swipe-line {
+    width: 36px;
+    height: 5px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+}
+
+@keyframes floatUp {
+    0%, 100% { 
+        transform: translateY(0); 
+        opacity: 0.4;
+    }
+    50% { 
+        transform: translateY(-8px); 
+        opacity: 0.8;
+    }
+}

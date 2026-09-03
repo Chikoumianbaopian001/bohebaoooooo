@@ -1,0 +1,471 @@
+/* ===== 微信App整体 ===== */
+#page-wechat {
+    background: #f5f5f5;
+    color: #333;
+}
+
+#page-wechat.active {
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* ===== 微信顶部栏 ===== */
+.wechat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: #ededed;
+    border-bottom: 1px solid #ddd;
+    flex-shrink: 0;
+}
+
+.wechat-header-left {
+    width: 60px;
+}
+
+.wechat-back {
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+.wechat-header-title {
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.wechat-header-right {
+    width: 60px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+}
+
+.wechat-header-btn {
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.wechat-header-btn img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+}
+
+/* ===== 微信内容区 ===== */
+.wechat-body {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.wechat-tab-content {
+    display: none;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.wechat-tab-content.active {
+    display: block;
+}
+
+/* ===== Tab1: 聊天列表 ===== */
+.chat-list {
+    background: white;
+}
+
+.chat-list-item {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    gap: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.chat-list-item:active {
+    background: #ececec;
+}
+
+.chat-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    background: #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.chat-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.chat-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.chat-info-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.chat-name {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.chat-time {
+    font-size: 12px;
+    color: #999;
+}
+
+.chat-last-msg {
+    font-size: 13px;
+    color: #999;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ===== Tab2: 通讯录 ===== */
+.contacts-header {
+    padding: 12px 16px;
+    background: white;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.add-contact-btn {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    background: #07c160;
+    color: white;
+    font-size: 15px;
+    text-align: center;
+}
+
+.contacts-list {
+    background: white;
+    margin-top: 8px;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    gap: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+}
+
+.contact-item:active {
+    background: #ececec;
+}
+
+.contact-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 6px;
+    background: #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.contact-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.contact-name {
+    font-size: 16px;
+}
+
+/* ===== Tab3: 朋友圈 ===== */
+.moments-header {
+    position: relative;
+    height: 200px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.moments-cover {
+    width: 100%;
+    height: 100%;
+}
+
+.moments-user-info {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.moments-username {
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.moments-user-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    border: 2px solid white;
+    overflow: hidden;
+}
+
+.moments-user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.moments-list {
+    background: white;
+    padding: 0 16px;
+}
+
+.moment-item {
+    display: flex;
+    gap: 10px;
+    padding: 14px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.moment-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    background: #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.moment-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.moment-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.moment-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #576b95;
+    margin-bottom: 4px;
+}
+
+.moment-text {
+    font-size: 15px;
+    line-height: 1.5;
+    color: #333;
+    margin-bottom: 6px;
+}
+
+.moment-images {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    margin-bottom: 6px;
+}
+
+.moment-images img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.moment-time {
+    font-size: 12px;
+    color: #999;
+}
+
+.moments-post-btn {
+    position: fixed;
+    bottom: 70px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #07c160;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(7, 193, 96, 0.4);
+    z-index: 10;
+}
+
+/* ===== Tab4: 我的 ===== */
+.profile-card {
+    display: flex;
+    align-items: center;
+    padding: 20px 16px;
+    background: white;
+    gap: 14px;
+    cursor: pointer;
+    margin-bottom: 8px;
+}
+
+.profile-card:active {
+    background: #ececec;
+}
+
+.profile-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    background: #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-name {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.profile-id {
+    font-size: 13px;
+    color: #999;
+}
+
+.profile-arrow {
+    font-size: 20px;
+    color: #ccc;
+}
+
+.profile-menu {
+    background: white;
+}
+
+.profile-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    gap: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+}
+
+.profile-menu-item:active {
+    background: #ececec;
+}
+
+.menu-icon {
+    font-size: 20px;
+    width: 28px;
+    text-align: center;
+}
+
+.menu-text {
+    flex: 1;
+    font-size: 16px;
+}
+
+.menu-arrow {
+    font-size: 18px;
+    color: #ccc;
+}
+
+/* ===== 微信底部Tab栏 ===== */
+.wechat-tabbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 8px 0 12px;
+    background: #f7f7f7;
+    border-top: 1px solid #e0e0e0;
+    flex-shrink: 0;
+}
+
+.wechat-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    cursor: pointer;
+    padding: 4px 16px;
+}
+
+.wechat-tab .tab-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wechat-tab .tab-icon img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    opacity: 0.5;
+    transition: all 0.2s;
+}
+
+.wechat-tab .tab-name {
+    font-size: 10px;
+    color: #999;
+    transition: color 0.2s;
+}
+
+/* 激活状态 - 图标和文字都变绿 */
+.wechat-tab.active .tab-icon img {
+    opacity: 1;
+    filter: brightness(0) saturate(100%) invert(55%) sepia(75%) saturate(500%) hue-rotate(100deg) brightness(95%);
+}
+
+.wechat-tab.active .tab-name {
+    color: #07c160;
+    font-weight: 600;
+}
+

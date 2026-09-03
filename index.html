@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>薄荷包</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/lockscreen.css">
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/wechat.css">
+    <link rel="stylesheet" href="css/chat.css">
+    <link rel="stylesheet" href="css/profile.css">
+    <link rel="stylesheet" href="css/worldbook.css">
+</head>
+<body>
+
+    <!-- ========== 锁屏页面 ========== -->
+    <div id="page-lockscreen" class="page active">
+        <div class="status-bar">
+            <div class="status-left">
+                <span class="status-time-small" id="status-time-lock">14:30</span>
+            </div>
+            <div class="status-center"></div>
+            <div class="status-right">
+                <div class="signal-icon">
+                    <div class="signal-bar bar-1"></div>
+                    <div class="signal-bar bar-2"></div>
+                    <div class="signal-bar bar-3"></div>
+                    <div class="signal-bar bar-4"></div>
+                </div>
+                <span class="status-wifi">
+                    <svg width="15" height="12" viewBox="0 0 15 12">
+                        <path d="M7.5 10.5a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" fill="#333"/>
+                        <path d="M4.5 8.8a4.2 4.2 0 016 0" stroke="#333" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+                        <path d="M2.2 6.2a7.2 7.2 0 0110.6 0" stroke="#333" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+                        <path d="M0 3.5a10.5 10.5 0 0115 0" stroke="#333" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </span>
+                <div class="battery-icon" id="battery-icon-lock">
+                    <div class="battery-body">
+                        <div class="battery-level" id="battery-level-lock"></div>
+                    </div>
+                    <div class="battery-tip"></div>
+                </div>
+                <span class="battery-percent" id="battery-percent-lock">100%</span>
+            </div>
+        </div>
+        <div class="lock-main">
+            <div class="lock-time" id="lock-time">14:30</div>
+            <div class="lock-date" id="lock-date">8月27日 星期四</div>
+        </div>
+        <div class="lock-bottom">
+            <div class="lock-swipe-hint">
+                <div class="swipe-line"></div>
+                <span>上划解锁</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 桌面页面 ========== -->
+    <div id="page-home" class="page">
+        <div class="status-bar">
+            <div class="status-left">
+                <span class="status-time-small" id="status-time-home">14:30</span>
+            </div>
+            <div class="status-center"></div>
+            <div class="status-right">
+                <div class="signal-icon">
+                    <div class="signal-bar bar-1"></div>
+                    <div class="signal-bar bar-2"></div>
+                    <div class="signal-bar bar-3"></div>
+                    <div class="signal-bar bar-4"></div>
+                </div>
+                <span class="status-wifi">
+                    <svg width="15" height="12" viewBox="0 0 15 12">
+                        <path d="M7.5 10.5a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" fill="#333"/>
+                        <path d="M4.5 8.8a4.2 4.2 0 016 0" stroke="#333" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+                        <path d="M2.2 6.2a7.2 7.2 0 0110.6 0" stroke="#333" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+                        <path d="M0 3.5a10.5 10.5 0 0115 0" stroke="#333" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </span>
+                <div class="battery-icon" id="battery-icon-home">
+                    <div class="battery-body">
+                        <div class="battery-level" id="battery-level-home"></div>
+                    </div>
+                    <div class="battery-tip"></div>
+                </div>
+                <span class="battery-percent" id="battery-percent-home">100%</span>
+            </div>
+        </div>
+
+        <!-- 桌面内容区 -->
+        <div class="home-content">
+            <!-- 天气组件 -->
+            <div class="home-widget weather-widget" data-w="4" data-h="2" id="widget-weather">
+                <div class="weather-left">
+                    <div class="weather-time" id="weather-time">14:30</div>
+                    <div class="weather-date-row">
+                        <div class="weather-date" id="weather-date">8月28日</div>
+                        <div class="weather-day" id="weather-day">星期四</div>
+                    </div>
+                </div>
+                <div class="weather-right" onclick="openWeatherSetting()">
+                    <div class="weather-icon" id="weather-icon">☁️</div>
+                    <div class="weather-temp" id="weather-temp">--°C</div>
+                    <div class="weather-city" id="weather-city">点击设置</div>
+                </div>
+            </div>
+
+            <!-- icity组件 -->
+            <div class="home-widget icity-widget" data-w="2" data-h="2" id="widget-icity">
+                <div class="icity-title">icity</div>
+                <div class="icity-date" id="icity-date">8/28 星期四</div>
+                <div class="icity-bottom">
+                    <div class="icity-avatar" id="icity-avatar" onclick="setIcityAvatar()">
+                        <span>+</span>
+                    </div>
+                    <div class="icity-text" contenteditable="true" id="icity-text">写点什么...</div>
+                </div>
+            </div>
+
+            <!-- App图标 -->
+            <div class="home-app" data-w="1" data-h="1" id="app-wechat">
+                <div class="home-app-icon wechat-icon">💬</div>
+                <div class="home-app-name">微信</div>
+            </div>
+            <div class="home-app" data-w="1" data-h="1" id="app-worldbook">
+                <div class="home-app-icon worldbook-icon">📖</div>
+                <div class="home-app-name">世界书</div>
+            </div>
+            <div class="home-app" data-w="1" data-h="1" id="app-settings">
+                <div class="home-app-icon settings-icon">⚙️</div>
+                <div class="home-app-name">设置</div>
+            </div>
+        </div>
+
+        <!-- 翻页指示器 -->
+        <div class="home-page-indicator">
+            <div class="page-dot active"></div>
+            <div class="page-dot"></div>
+            <div class="page-dot"></div>
+        </div>
+
+        <!-- Dock栏 -->
+        <div class="home-dock">
+            <div class="dock-app" id="dock-1"><div class="dock-app-icon">📱</div></div>
+            <div class="dock-app" id="dock-2"><div class="dock-app-icon">📷</div></div>
+            <div class="dock-app" id="dock-3"><div class="dock-app-icon">🎵</div></div>
+            <div class="dock-app" id="dock-4"><div class="dock-app-icon">🌐</div></div>
+        </div>
+
+        <!-- 天气设置弹窗 -->
+        <div class="modal-overlay" id="weather-modal" style="display:none;">
+            <div class="modal-box">
+                <h3>🌤️ 天气设置</h3>
+                <label>真实城市（用于获取天气）</label>
+                <input type="text" id="weather-real-city" placeholder="例如：Beijing、Shanghai">
+                <p style="font-size:11px;color:#999;margin-top:-4px;">建议用英文或拼音</p>
+                <label>显示城市名（可以是虚拟的）</label>
+                <input type="text" id="weather-display-city" placeholder="例如：璃月、蒙德">
+                <div class="modal-buttons">
+                    <button class="modal-cancel" onclick="closeWeatherSetting()">取消</button>
+                    <button class="modal-confirm" onclick="saveWeatherSetting()">保存</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- icity头像弹窗 -->
+        <div class="modal-overlay" id="icity-avatar-modal" style="display:none;">
+            <div class="modal-box">
+                <h3>🖼️ 设置头像</h3>
+                <label>图片URL</label>
+                <input type="text" id="icity-avatar-url" placeholder="输入图片链接">
+                <label>或上传图片</label>
+                <input type="file" id="icity-avatar-file" accept="image/*">
+                <div class="modal-buttons">
+                    <button class="modal-cancel" onclick="closeIcityAvatar()">取消</button>
+                    <button class="modal-confirm" onclick="saveIcityAvatar()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ========== 微信App页面 ========== -->
+    <div id="page-wechat" class="page">
+        <div class="wechat-header">
+            <div class="wechat-header-left">
+                <span class="wechat-back" onclick="switchPage('page-home')">←</span>
+            </div>
+            <div class="wechat-header-title" id="wechat-title">微信</div>
+            <div class="wechat-header-right">
+                <span class="wechat-header-btn" onclick="openSearch()">
+                    <img src="https://nos.netease.com/ysf/dd1bd8dcbc5d3cd756b5d5525143aa83.png" alt="搜索">
+                </span>
+                <span class="wechat-header-btn" onclick="openAdd()">➕</span>
+            </div>
+        </div>
+
+        <div class="wechat-body">
+            <!-- 聊天列表 -->
+            <div class="wechat-tab-content active" id="tab-chats">
+                <div class="chat-list" id="chat-list">
+                    <div class="chat-list-item" onclick="switchPage('page-chat')">
+                        <div class="chat-avatar">🤖</div>
+                        <div class="chat-info">
+                            <div class="chat-info-top">
+                                <span class="chat-name">AI助手</span>
+                                <span class="chat-time">14:30</span>
+                            </div>
+                            <div class="chat-last-msg">你好！有什么想聊的？</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 通讯录 -->
+            <div class="wechat-tab-content" id="tab-contacts">
+                <div class="contacts-header">
+                    <button class="add-contact-btn" onclick="addNewContact()">+ 添加AI好友</button>
+                </div>
+                <div class="contacts-list" id="contacts-list">
+                    <div class="contact-item">
+                        <div class="contact-avatar">🤖</div>
+                        <div class="contact-name">AI助手</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 朋友圈 -->
+            <div class="wechat-tab-content" id="tab-moments">
+                <div class="moments-header">
+                    <div class="moments-cover"></div>
+                    <div class="moments-user-info">
+                        <span class="moments-username">我的昵称</span>
+                        <div class="moments-user-avatar">👤</div>
+                    </div>
+                </div>
+                <div class="moments-list" id="moments-list">
+                    <div class="moment-item">
+                        <div class="moment-avatar">🤖</div>
+                        <div class="moment-content">
+                            <div class="moment-name">AI助手</div>
+                            <div class="moment-text">今天天气真好，想出去走走~</div>
+                            <div class="moment-time">2分钟前</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="moments-post-btn" onclick="postMoment()">📷</div>
+            </div>
+
+            <!-- 我的 -->
+            <div class="wechat-tab-content" id="tab-profile">
+                <div class="profile-card">
+                    <div class="profile-avatar" id="my-avatar" onclick="setMyAvatar()">👤</div>
+                    <div class="profile-info">
+                        <div class="profile-name" id="my-name">点击设置昵称</div>
+                        <div class="profile-id">微信号：AI-Phone</div>
+                    </div>
+                    <span class="profile-arrow">›</span>
+                </div>
+                <div class="profile-menu">
+                    <div class="profile-menu-item" onclick="openMyPersona()">
+                        <span class="menu-icon">😀</span>
+                        <span class="menu-text">我的人设</span>
+                        <span class="menu-arrow">›</span>
+                    </div>
+                    <div class="profile-menu-item" onclick="openWallet()">
+                        <span class="menu-icon">💰</span>
+                        <span class="menu-text">钱包</span>
+                        <span class="menu-arrow">›</span>
+                    </div>
+                    <div class="profile-menu-item" onclick="openFavorites()">
+                        <span class="menu-icon">
+                            <img src="https://nos.netease.com/ysf/0ec9815103e667bd056bcfcb569ba485.png" alt="收藏" style="width:20px;height:20px;object-fit:contain;">
+                        </span>
+                        <span class="menu-text">收藏</span>
+                        <span class="menu-arrow">›</span>
+                    </div>
+                    <div class="profile-menu-item" onclick="openWechatSettings()">
+                        <span class="menu-icon">⚙️</span>
+                        <span class="menu-text">设置</span>
+                        <span class="menu-arrow">›</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部Tab栏 -->
+        <div class="wechat-tabbar">
+            <div class="wechat-tab active" onclick="switchWechatTab('chats', this)">
+                <div class="tab-icon"><img src="https://nos.netease.com/ysf/cd1084462e5add172cbdefa38d512c56.png" alt="聊天"></div>
+                <div class="tab-name">聊天</div>
+            </div>
+            <div class="wechat-tab" onclick="switchWechatTab('contacts', this)">
+                <div class="tab-icon"><img src="https://nos.netease.com/ysf/b04a0196310ac8098c1cd3f29bc32be8.png" alt="通讯录"></div>
+                <div class="tab-name">通讯录</div>
+            </div>
+            <div class="wechat-tab" onclick="switchWechatTab('moments', this)">
+                <div class="tab-icon"><img src="https://nos.netease.com/ysf/611cf3859aa4f9f30a08879292bed5a4.png" alt="朋友圈"></div>
+                <div class="tab-name">朋友圈</div>
+            </div>
+            <div class="wechat-tab" onclick="switchWechatTab('profile', this)">
+                <div class="tab-icon"><img src="https://nos.netease.com/ysf/36178e3a63171e2419ba36c8b6c2f0f4.png" alt="我"></div>
+                <div class="tab-name">我</div>
+            </div>
+        </div>
+    </div>
+    <!-- ========== 聊天界面 ========== -->
+    <div id="page-chat" class="page">
+        <!-- 顶部栏 -->
+        <div class="chat-header">
+            <div class="chat-header-left">
+                <span class="chat-back" onclick="closeChat()">
+                    <img src="https://nos.netease.com/ysf/306ec73897db4f75dc41a5fe14d6652f.png" alt="返回">
+                </span>
+            </div>
+            <div class="chat-header-center">
+                <span class="chat-header-name" id="chat-header-name">AI助手</span>
+            </div>
+            <div class="chat-header-right">
+                <span class="chat-header-btn" onclick="openCallChoice()">
+                    <img src="https://nos.netease.com/ysf/96516362a3b96bd114f72da73e3c07a1.png" alt="通话">
+                </span>
+                <span class="chat-header-btn" onclick="switchPage('page-chat-settings')">⋯</span>
+            </div>
+        </div>
+
+        <!-- 消息区域 -->
+        <div class="chat-messages" id="chat-messages">
+            <div class="chat-time-label">14:30</div>
+            <div class="msg-row msg-left">
+                <div class="msg-avatar">🤖</div>
+                <div class="msg-bubble-wrap">
+                    <div class="msg-bubble left">你好！今天想聊点什么？</div>
+                </div>
+            </div>
+            <div class="msg-row msg-right">
+                <div class="msg-avatar">👤</div>
+                <div class="msg-bubble-wrap">
+                    <div class="msg-bubble right">你好呀~</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 长按菜单 -->
+        <div class="msg-context-menu" id="msg-context-menu" style="display:none;">
+            <div class="context-menu-items" id="context-menu-items"></div>
+        </div>
+
+        <!-- 多选底部栏 -->
+        <div class="multi-select-bar" id="multi-select-bar" style="display:none;">
+            <button class="multi-bar-btn" onclick="multiForward()">
+                <span class="multi-bar-icon">
+                    <img src="https://nos.netease.com/ysf/a277015ab77edc98c6e53fc3e8a63be7.png" alt="转发">
+                </span>
+                <span>转发</span>
+            </button>
+            <button class="multi-bar-btn" onclick="multiFavorite()">
+                <span class="multi-bar-icon">
+                    <img src="https://nos.netease.com/ysf/0ec9815103e667bd056bcfcb569ba485.png" alt="收藏">
+                </span>
+                <span>收藏</span>
+            </button>
+            <button class="multi-bar-btn danger" onclick="multiDelete()">
+                <span class="multi-bar-icon">
+                    <img src="https://nos.netease.com/ysf/4719ed82d89553faae0fcd76402ada0d.png" alt="删除">
+                </span>
+                <span>删除</span>
+            </button>
+            <button class="multi-bar-btn" onclick="exitMultiSelect()">
+                <span class="multi-bar-icon">✕</span>
+                <span>取消</span>
+            </button>
+        </div>
+
+        <!-- 底部输入区域 -->
+        <div class="chat-bottom">
+            <div class="chat-input-bar">
+                <span class="chat-tool-btn" id="voice-toggle" onclick="toggleVoice()">
+                    <img src="https://nos.netease.com/ysf/6bf52c7f6af2ecb998f806e1a4e511b9.png" alt="语音">
+                </span>
+                <div class="chat-input-wrap" id="chat-input-wrap">
+                    <input type="text" id="chat-input" placeholder="输入消息..." oninput="onChatInputChange()">
+                </div>
+                <div class="chat-voice-btn" id="chat-voice-btn" style="display:none;">
+                    <span>按住 说话</span>
+                </div>
+                <span class="chat-tool-btn" onclick="toggleEmoji()" id="emoji-btn">
+                    <img src="https://nos.netease.com/ysf/790a3f898f1b53298ee4253f1b68deb8.png" alt="表情">
+                </span>
+                <span class="chat-send-btn" id="send-btn" style="display:none;" onclick="sendChatMessage()">发送</span>
+                <span class="chat-stop-btn" id="stop-btn" onclick="stopGeneration()">
+                    <img src="https://nos.netease.com/ysf/bc9b3b93980711c0d00fb7e56fbaffa8.png" alt="终止">
+                </span>
+                <span class="chat-tool-btn" id="plus-btn" onclick="togglePlus()">
+                    <img src="https://nos.netease.com/ysf/c7604fd01eeaa94a64d283ee1c22c4ac.png" alt="更多">
+                </span>
+            </div>
+
+            <!-- 表情面板 -->
+            <div class="chat-panel emoji-panel" id="emoji-panel" style="display:none;">
+                <div class="emoji-grid" id="emoji-grid">
+                    <div class="emoji-placeholder">暂无表情包，请在设置中导入</div>
+                </div>
+                <div class="emoji-bottom-bar">
+                    <span class="emoji-manage-btn" onclick="manageEmoji()">⚙️ 管理</span>
+                </div>
+            </div>
+
+            <!-- 加号面板 -->
+            <div class="chat-panel plus-panel" id="plus-panel" style="display:none;">
+                <div class="plus-grid">
+                    <div class="plus-item" onclick="sendImage()">
+                        <div class="plus-icon">
+                            <img src="https://nos.netease.com/ysf/e95133e5a9bf06f9c1ca60e0141faaf6.png" alt="图片">
+                        </div>
+                        <div class="plus-name">图片</div>
+                    </div>
+                    <div class="plus-item" onclick="sendLocation()">
+                        <div class="plus-icon">
+                            <img src="https://nos.netease.com/ysf/6686ae527b404f74612b26e42662db34.png" alt="位置">
+                        </div>
+                        <div class="plus-name">位置</div>
+                    </div>
+                    <div class="plus-item" onclick="sendTransfer()">
+                        <div class="plus-icon">
+                            <img src="https://nos.netease.com/ysf/00da49f126f4d1d3ffe401dbb57507c9.png" alt="转账">
+                        </div>
+                        <div class="plus-name">转账</div>
+                    </div>
+                    <div class="plus-item" onclick="createDateInChat()">
+                        <div class="plus-icon">❤️</div>
+                        <div class="plus-name">线下约会</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 通话选择弹窗 -->
+        <div class="modal-overlay" id="call-modal" style="display:none;">
+            <div class="modal-box">
+                <h3>选择通话方式</h3>
+                <div class="call-choices">
+                    <div class="call-choice" onclick="startCall('voice')">
+                        <div class="call-choice-icon">
+                            <img src="https://nos.netease.com/ysf/96516362a3b96bd114f72da73e3c07a1.png" alt="语音通话">
+                        </div>
+                        <div class="call-choice-name">语音通话</div>
+                    </div>
+                    <div class="call-choice" onclick="startCall('video')">
+                        <div class="call-choice-icon">
+                            <img src="https://nos.netease.com/ysf/fd06e73dee956aa4b6b31c9d9134a1d1.png" alt="视频通话">
+                        </div>
+                        <div class="call-choice-name">视频通话</div>
+                    </div>
+                </div>
+                <button class="modal-cancel" onclick="closeCallChoice()" style="width:100%;margin-top:12px;">取消</button>
+            </div>
+        </div>
+
+        <!-- 转账弹窗 -->
+        <div class="modal-overlay" id="transfer-modal" style="display:none;" onclick="closeTransferModal()">
+            <div class="tf-modal" onclick="event.stopPropagation()">
+                <div class="tf-modal-close" onclick="closeTransferModal()">✕</div>
+                <div class="tf-modal-top">
+                    <div class="tf-modal-label" id="tf-modal-label">AI助手 转账给你</div>
+                    <div class="tf-modal-amount" id="tf-modal-amount">
+                        <span class="tf-modal-amount-symbol">¥</span>520.00
+                    </div>
+                    <div class="tf-modal-desc">转账金额</div>
+                </div>
+                <div class="tf-modal-bottom">
+                    <button class="tf-confirm-btn" onclick="claimTransfer()">确认收款</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 删除确认弹窗 -->
+        <div class="modal-overlay" id="delete-confirm-modal" style="display:none;" onclick="closeDeleteConfirm()">
+            <div class="delete-confirm-box" onclick="event.stopPropagation()">
+                <div class="delete-confirm-text" id="delete-confirm-text">确定删除选中的消息？</div>
+                <div class="delete-confirm-sub">删除后不计入AI记忆</div>
+                <div class="delete-confirm-btns">
+                    <button class="delete-confirm-cancel" onclick="closeDeleteConfirm()">取消</button>
+                    <button class="delete-confirm-ok" onclick="confirmDelete()">删除</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 心声弹窗 -->
+        <div class="modal-overlay" id="heart-modal" style="display:none;" onclick="closeHeartModal()">
+            <div class="heart-modal-wrapper" onclick="event.stopPropagation()">
+                <div class="heart-avatar" id="heart-avatar">🤖</div>
+                <div class="heart-modal-box" id="heart-modal-box">
+                    <div class="heart-close" onclick="closeHeartModal()">✕</div>
+                    <div class="heart-bgm">
+                        <span class="heart-bgm-icon">🎵</span>
+                        <span class="heart-bgm-text" id="heart-bgm-text">当前BGM：等待生成...</span>
+                    </div>
+                    <div class="heart-danmaku-area">
+                        <div class="heart-danmaku" id="heart-danmaku">等待生成...</div>
+                    </div>
+                    <div class="heart-content">
+                        <div class="heart-label">💭 此刻心声</div>
+                        <div class="heart-text" id="heart-text">发送消息后点击AI头像查看心声</div>
+                    </div>
+                    <div class="heart-strategy">
+                        <div class="heart-strategy-label">🧠 此刻在盘算什么</div>
+                        <div class="heart-pills" id="heart-pills">
+                            <span class="heart-pill" data-key="analyze">⩌ ֊ ⩌ 分析你</span>
+                            <span class="heart-pill" data-key="guide">ᗜᴗᗜ 引导话题</span>
+                            <span class="heart-pill" data-key="hide">⩌⌯⩌ 隐瞒想法</span>
+                            <span class="heart-pill" data-key="empathy">՞⩌⌯⩌՞ ᶻ 共情模式</span>
+                            <span class="heart-pill" data-key="stuck">ᗜ‿ᗜꐦ 编不下去了</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="heart-float-btns">
+                    <div class="heart-float-btn" onclick="favoriteHeart()">
+                        <img src="https://nos.netease.com/ysf/0ec9815103e667bd056bcfcb569ba485.png" alt="收藏">
+                    </div>
+                    <div class="heart-float-btn" onclick="openHeartHistory()">📜</div>
+                    <div class="heart-float-btn" onclick="openHeartSettingsPopup()">⚙️</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 心声历史弹窗 -->
+        <div class="modal-overlay" id="heart-history-modal" style="display:none;" onclick="closeHeartHistory()">
+            <div class="heart-sub-popup" onclick="event.stopPropagation()">
+                <div class="heart-sub-header">
+                    <span class="heart-sub-title">📜 历史心声</span>
+                    <span class="heart-sub-close" onclick="closeHeartHistory()">✕</span>
+                </div>
+                <div class="heart-sub-body" id="heart-history-body">
+                    <div class="heart-history-empty">暂无历史心声</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 心声设置弹窗 -->
+        <div class="modal-overlay" id="heart-settings-modal" style="display:none;" onclick="closeHeartSettingsPopup()">
+            <div class="heart-sub-popup" onclick="event.stopPropagation()">
+                <div class="heart-sub-header">
+                    <span class="heart-sub-title">⚙️ 心声设置</span>
+                    <span class="heart-sub-close" onclick="closeHeartSettingsPopup()">✕</span>
+                </div>
+                <div class="heart-sub-body">
+                    <div class="heart-setting-group">
+                        <div class="heart-setting-label">弹窗背景</div>
+                        <div class="cs-bg-preview" id="heart-bg-preview" onclick="openHeartBgSetting()" style="height:80px;">
+                            <span class="cs-bg-placeholder">点击更换背景</span>
+                        </div>
+                    </div>
+                    <div class="heart-setting-group">
+                        <div class="heart-setting-label">显示模块</div>
+                        <div class="heart-setting-toggle">
+                            <span>🎵 BGM</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="heart-mod-bgm" checked onchange="saveHeartSettings()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="heart-setting-toggle">
+                            <span>💬 弹幕</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="heart-mod-danmaku" checked onchange="saveHeartSettings()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="heart-setting-toggle">
+                            <span>💭 心声</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="heart-mod-heart" checked onchange="saveHeartSettings()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="heart-setting-toggle">
+                            <span>🧠 策略</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="heart-mod-strategy" checked onchange="saveHeartSettings()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="heart-setting-group">
+                        <div class="heart-setting-label">自定义CSS</div>
+                        <textarea class="heart-css-area" id="heart-css-editor" placeholder="/* 心声弹窗样式 */"></textarea>
+                        <button class="heart-css-save-btn" onclick="saveHeartCss()">保存样式</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 心声背景弹窗 -->
+        <div class="modal-overlay" id="heart-bg-modal" style="display:none;">
+            <div class="modal-box">
+                <h3>🖼️ 更换心声背景</h3>
+                <label>图片URL</label>
+                <input type="text" id="heart-bg-url" placeholder="输入背景图片链接">
+                <label>或上传图片</label>
+                <input type="file" id="heart-bg-file" accept="image/*">
+                <div class="modal-buttons">
+                    <button class="modal-cancel" onclick="closeHeartBgSetting()">取消</button>
+                    <button class="modal-confirm" onclick="saveHeartBg()">保存</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- page-chat 结束 -->
+    <!-- ========== 聊天设置页面 ========== -->
+    <div id="page-chat-settings" class="page">
+        <div class="cs-header">
+            <span class="cs-back" onclick="switchPage('page-chat')">←</span>
+            <span class="cs-title">聊天设置</span>
+            <span class="cs-placeholder"></span>
+        </div>
+        <div class="cs-body">
+            <!-- AI回复条数 -->
+            <div class="cs-card">
+                <div class="cs-card-title">AI回复条数</div>
+                <div class="cs-range-row">
+                    <input type="number" class="cs-range-input" id="cs-reply-min" value="1" min="1" max="10">
+                    <span class="cs-range-wave">～</span>
+                    <input type="number" class="cs-range-input" id="cs-reply-max" value="3" min="1" max="10">
+                </div>
+            </div>
+
+            <!-- 记忆总结 -->
+            <div class="cs-card">
+                <div class="cs-card-title">记忆总结</div>
+                <div class="cs-memory-options">
+                    <div class="cs-radio-group">
+                        <label class="cs-radio-item">
+                            <input type="radio" name="memory-mode" value="manual" id="cs-memory-manual" checked>
+                            <span class="cs-radio-label">手动总结</span>
+                        </label>
+                        <label class="cs-radio-item">
+                            <input type="radio" name="memory-mode" value="auto" id="cs-memory-auto">
+                            <span class="cs-radio-label">自动总结</span>
+                        </label>
+                    </div>
+                    <div class="cs-auto-setting" id="cs-auto-setting" style="display:none;">
+                        <div class="cs-auto-row">
+                            <span class="cs-auto-label">每</span>
+                            <input type="number" class="cs-auto-input" id="cs-memory-count" value="20" min="5" max="200" step="5">
+                            <span class="cs-auto-label">条消息自动总结</span>
+                        </div>
+                    </div>
+                    <button class="cs-summary-btn" onclick="manualSummary()">立即总结</button>
+                </div>
+            </div>
+
+            <!-- 自动翻译 -->
+            <div class="cs-card">
+                <div class="cs-card-title">自动翻译</div>
+                <div class="cs-card-desc">开启后，AI发送的外语/粤语消息会自动翻译</div>
+                <div class="cs-card-toggle-row">
+                    <span class="cs-toggle-label">启用翻译</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="cs-translate">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 自动发消息 -->
+            <div class="cs-card">
+                <div class="cs-card-title">自动发消息</div>
+                <div class="cs-card-desc">开启后，AI会在设定时间后主动发送消息</div>
+                <div class="cs-card-toggle-row">
+                    <span class="cs-toggle-label">启用自动发消息</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="cs-auto-msg" onchange="toggleAutoMsg()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="cs-auto-msg-setting" id="cs-auto-msg-setting" style="display:none;">
+                    <div class="cs-auto-msg-row">
+                        <span class="cs-auto-label">每隔</span>
+                        <input type="number" class="cs-auto-input" id="cs-auto-msg-value" value="30" min="1" max="999">
+                        <select class="cs-auto-select" id="cs-auto-msg-unit">
+                            <option value="min" selected>分钟</option>
+                            <option value="hour">小时</option>
+                        </select>
+                        <span class="cs-auto-label">发一次</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Minimax语音 -->
+            <div class="cs-card">
+                <div class="cs-card-title">Minimax 语音</div>
+                <div class="cs-card-desc">未连接时点击语音条自动转文字</div>
+                <div class="cs-input-group">
+                    <label class="cs-input-label">语音编号</label>
+                    <input type="text" class="cs-text-input" id="cs-minimax-voice-id" placeholder="输入语音编号">
+                </div>
+                <div class="cs-card-toggle-row">
+                    <span class="cs-toggle-label">语音消息</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="cs-minimax-voice-msg">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="cs-card-toggle-row">
+                    <span class="cs-toggle-label">语音/视频通话</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="cs-minimax-call">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 生图 -->
+            <div class="cs-card">
+                <div class="cs-card-title">AI 生图</div>
+                <div class="cs-card-desc">未连接时显示文字描述</div>
+                <div class="cs-input-group">
+                    <label class="cs-input-label">生图提示词</label>
+                    <textarea class="cs-textarea" id="cs-image-prompt" placeholder="描述图片风格和内容..."></textarea>
+                </div>
+            </div>
+
+            <!-- 聊天背景 -->
+            <div class="cs-card">
+                <div class="cs-card-title">聊天背景</div>
+                <div class="cs-bg-preview" id="cs-bg-preview" onclick="openBgSetting()">
+                    <span class="cs-bg-placeholder">点击更换背景</span>
+                </div>
+            </div>
+
+            <!-- 气泡CSS -->
+            <div class="cs-card cs-card-link" onclick="switchPage('page-bubble-css')">
+                <div class="cs-card-title">气泡CSS</div>
+                <span class="cs-arrow">›</span>
+            </div>
+
+            <!-- 界面CSS -->
+            <div class="cs-card cs-card-link" onclick="switchPage('page-ui-css')">
+                <div class="cs-card-title">界面CSS</div>
+                <span class="cs-arrow">›</span>
+            </div>
+
+            <!-- 开关们 -->
+            <div class="cs-card cs-card-row">
+                <div class="cs-card-title">时间感知</div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="cs-time-aware">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="cs-card cs-card-row">
+                <div class="cs-card-title">拉黑AI</div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="cs-block-ai">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="cs-card cs-card-row">
+                <div class="cs-card-title">允许被AI拉黑</div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="cs-allow-block">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+
+            <!-- 危险操作 -->
+            <div class="cs-danger-zone">
+                <button class="cs-danger-btn" onclick="clearChatHistory()">清除聊天记录</button>
+                <button class="cs-danger-btn" onclick="deleteAIFriend()">删除AI好友</button>
+            </div>
+        </div>
+
+        <!-- 背景设置弹窗 -->
+        <div class="modal-overlay" id="bg-modal" style="display:none;">
+            <div class="modal-box">
+                <h3>🖼️ 更换聊天背景</h3>
+                <label>图片URL</label>
+                <input type="text" id="cs-bg-url" placeholder="输入背景图片链接">
+                <label>或从相册选择</label>
+                <input type="file" id="cs-bg-file" accept="image/*">
+                <div class="modal-buttons">
+                    <button class="modal-cancel" onclick="closeBgSetting()">取消</button>
+                    <button class="modal-confirm" onclick="saveBgSetting()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 气泡CSS编辑 ========== -->
+    <div id="page-bubble-css" class="page">
+        <div class="cs-header">
+            <span class="cs-back" onclick="switchPage('page-chat-settings')">←</span>
+            <span class="cs-title">气泡CSS</span>
+            <span class="cs-save" onclick="saveBubbleCss()">保存</span>
+        </div>
+        <div class="css-edit-body">
+            <div class="css-edit-hint">编辑气泡样式，修改后点击保存生效</div>
+            <textarea class="css-edit-area" id="bubble-css-editor" placeholder="/* 左侧AI气泡 */
+.msg-bubble.left {
+    background: white;
+    border-radius: 4px;
+    color: #333;
+}
+
+/* 右侧用户气泡 */
+.msg-bubble.right {
+    background: #95ec69;
+    border-radius: 4px;
+    color: #333;
+}"></textarea>
+        </div>
+    </div>
+
+    <!-- ========== 界面CSS编辑 ========== -->
+    <div id="page-ui-css" class="page">
+        <div class="cs-header">
+            <span class="cs-back" onclick="switchPage('page-chat-settings')">←</span>
+            <span class="cs-title">界面CSS</span>
+            <span class="cs-save" onclick="saveUiCss()">保存</span>
+        </div>
+        <div class="css-edit-body">
+            <div class="css-edit-hint">编辑聊天界面样式，修改后点击保存生效</div>
+            <textarea class="css-edit-area" id="ui-css-editor" placeholder="/* 聊天背景 */
+#page-chat {
+    background: #ececec;
+}
+
+/* 顶部栏 */
+.chat-header {
+    background: #ededed;
+}"></textarea>
+        </div>
+    </div>
+
+	<!-- ========== 世界书页面 ========== -->
+	<div id="page-worldbook" class="page">
+	    <div class="cs-header">
+	        <span class="cs-back" onclick="switchPage('page-home')">←</span>
+	        <span class="cs-title">世界书</span>
+	        <span class="cs-save" onclick="openWorldBookEditor(null)">+ 添加</span>
+	    </div>
+	    <div class="wb-body" id="worldbook-body">
+	        <div class="wb-empty">暂无世界书，点击右上角添加</div>
+	    </div>
+	</div>
+
+    <!-- ========== 全局设置页面 ========== -->
+    <div id="page-settings" class="page">
+        <div class="cs-header">
+            <span class="cs-back" onclick="switchPage('page-home')">←</span>
+            <span class="cs-title">设置</span>
+            <span class="cs-placeholder"></span>
+        </div>
+        <div class="cs-body">
+            <!-- 锁屏开关 -->
+            <div class="cs-card cs-card-row">
+                <div class="cs-card-title">锁屏</div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="global-lock-enabled" onchange="toggleLockScreen()">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+
+            <!-- 主API -->
+            <div class="cs-card">
+                <div class="cs-card-title">主 API</div>
+                <div class="cs-input-group">
+                    <label class="cs-input-label">API Key</label>
+                    <input type="password" class="cs-text-input" id="global-api-key" placeholder="输入API Key">
+                </div>
+                <div class="cs-input-group">
+                    <label class="cs-input-label">API 地址</label>
+                    <input type="text" class="cs-text-input" id="global-api-url" placeholder="https://api.openai.com/v1">
+                </div>
+                <div class="cs-input-group">
+                    <label class="cs-input-label">模型</label>
+                    <div class="cs-model-row">
+                        <input type="text" class="cs-text-input cs-model-input" id="global-api-model" placeholder="gpt-4">
+                        <button class="cs-fetch-btn" onclick="fetchModels('main')">拉取</button>
+                    </div>
+                    <select class="cs-model-select" id="global-model-list" style="display:none;" onchange="selectModel('main')">
+                    </select>
+                </div>
+            </div>
+
+            <!-- 副API -->
+            <div class="cs-card">
+                <div class="cs-card-title">副 API（备用）</div>
+                <div class="cs-card-desc">主API不可用时自动切换</div>
+                <div class="cs-input-group">
+                    <label class="cs-input-label">API Key</label>
+                    <input type="password" class="cs-text-input" id="global-sub-api-key" placeholder="输入副API Key">
+                </div>
+                <div class="cs-input-group">
+                    <label class="cs-input-label">API 地址</label>
+                    <input type="text" class="cs-text-input" id="global-sub-api-url" placeholder="https://api.openai.com/v1">
+                </div>
+                <div class="cs-input-group">
+                    <label class="cs-input-label">模型</label>
+                    <div class="cs-model-row">
+                        <input type="text" class="cs-text-input cs-model-input" id="global-sub-api-model" placeholder="gpt-4">
+                        <button class="cs-fetch-btn" onclick="fetchModels('sub')">拉取</button>
+                    </div>
+                    <select class="cs-model-select" id="global-sub-model-list" style="display:none;" onchange="selectModel('sub')">
+                    </select>
+                </div>
+            </div>
+
+            <!-- Minimax语音API -->
+            <div class="cs-card">
+                <div class="cs-card-title">Minimax 语音 API</div>
+                <div class="cs-input-group">
+                    <label class="cs-input-label">API Key</label>
+                    <input type="password" class="cs-text-input" id="global-minimax-key" placeholder="输入Minimax API Key">
+                </div>
+                <div class="cs-input-group">
+                    <label class="cs-input-label">Group ID</label>
+                    <input type="text" class="cs-text-input" id="global-minimax-group" placeholder="输入Group ID">
+                </div>
+                <div class="cs-input-group">
+                    <label class="cs-input-label">API 地址</label>
+                    <input type="text" class="cs-text-input" id="global-minimax-url" placeholder="https://api.minimax.chat/v1/t2a_v2">
+                </div>
+            </div>
+
+            <!-- 生图API -->
+            <div class="cs-card">
+                <div class="cs-card-title">AI 生图 API</div>
+                <div class="cs-input-group">
+                    <label class="cs-input-label">API Key</label>
+                    <input type="password" class="cs-text-input" id="global-image-key" placeholder="输入生图API Key">
+                </div>
+                <div class="cs-input-group">
+                    <label class="cs-input-label">API 地址</label>
+                    <input type="text" class="cs-text-input" id="global-image-url" placeholder="https://api.openai.com/v1/images/generations">
+                </div>
+                <div class="cs-input-group">
+                    <label class="cs-input-label">模型</label>
+                    <input type="text" class="cs-text-input" id="global-image-model" placeholder="dall-e-3">
+                </div>
+            </div>
+
+            <!-- 保存按钮 -->
+            <button class="cs-save-btn" onclick="saveGlobalSettings()">保存设置</button>
+        </div>
+    </div>
+
+    <!-- JS文件引入 -->
+    <script src="js/config.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/contacts.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/worldbook.js"></script>
+</body>
+</html>
