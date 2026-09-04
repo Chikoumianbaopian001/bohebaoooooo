@@ -15,8 +15,11 @@ function addNewContact() {
     openContactEditor(null);
 }
 
-// 打开联系人编辑弹窗
 function openContactEditor(contact) {
+    // 先清除旧弹窗
+    var old = document.getElementById('contact-editor-container');
+    if (old) old.remove();
+
     var isEdit = !!contact;
 
     var html = '<div class="modal-overlay" id="contact-editor-modal" onclick="closeContactEditor()">';
@@ -26,32 +29,58 @@ function openContactEditor(contact) {
 
     // 头像
     html += '<div class="ce-avatar-row">';
-    html += '<div class="ce-avatar" id="ce-avatar" onclick="chooseContactAvatar()">' + (contact && contact.avatar ? '<img src="' + contact.avatar + '">' : '👤') + '</div>';
+    html += '<div class="ce-avatar" id="ce-avatar" onclick="chooseContactAvatar()">';
+    if (contact && contact.avatar) {
+        html += '<img src="' + contact.avatar + '">';
+    } else {
+        html += '👤';
+    }
+    html += '</div>';
     html += '<span class="ce-avatar-hint">点击设置头像</span>';
     html += '</div>';
 
     // 姓名
-    html += '<div class="ce-field"><label>姓名</label><input type="text" id="ce-name" placeholder="AI的名字" value="' + (contact ? contact.name : '') + '"></div>';
+    html += '<div class="ce-field"><label>姓名</label><input type="text" id="ce-name" placeholder="AI的名字"></div>';
 
     // 性别
-    html += '<div class="ce-field"><label>性别</label><select id="ce-gender"><option value="女"' + (contact && contact.gender === '女' ? ' selected' : '') + '>女</option><option value="男"' + (contact && contact.gender === '男' ? ' selected' : '') + '>男</option><option value="其他"' + (contact && contact.gender === '其他' ? ' selected' : '') + '>其他</option></select></div>';
+    html += '<div class="ce-field"><label>性别</label><select id="ce-gender">';
+    html += '<option value="女">女</option>';
+    html += '<option value="男">男</option>';
+    html += '<option value="其他">其他</option>';
+    html += '</select></div>';
 
     // 生日
-    html += '<div class="ce-field"><label>生日</label><input type="date" id="ce-birthday" value="' + (contact ? contact.birthday || '' : '') + '"></div>';
+    html += '<div class="ce-field"><label>生日</label><input type="date" id="ce-birthday"></div>';
 
     // 人设
-    html += '<div class="ce-field"><label>人设</label><textarea id="ce-persona" placeholder="描述这个AI的性格、背景、说话方式...">' + (contact ? contact.persona || '' : '') + '</textarea></div>';
+    html += '<div class="ce-field"><label>人设</label><textarea id="ce-persona" placeholder="描述这个AI的性格、背景、说话方式..."></textarea></div>';
 
     // 保存按钮
-    html += '<button class="ce-save-btn" onclick="saveContact(\'' + (contact ? contact.id : '') + '\')">' + (isEdit ? '保存修改' : '添加好友') + '</button>';
+    html += '<button class="ce-save-btn" onclick="saveContact(\'' + (contact ? contact.id : '') + '\')">';
+    html += (isEdit ? '保存修改' : '添加好友');
+    html += '</button>';
 
     html += '</div></div></div>';
 
-    // 插入到body
     var div = document.createElement('div');
     div.id = 'contact-editor-container';
     div.innerHTML = html;
     document.body.appendChild(div);
+
+    // ★ 弹窗创建后再填入值，避免引号问题
+    if (contact) {
+        var nameInput = document.getElementById('ce-name');
+        var genderSelect = document.getElementById('ce-gender');
+        var birthdayInput = document.getElementById('ce-birthday');
+        var personaTextarea = document.getElementById('ce-persona');
+        var avatarEl = document.getElementById('ce-avatar');
+
+        if (nameInput) nameInput.value = contact.name || '';
+        if (genderSelect) genderSelect.value = contact.gender || '女';
+        if (birthdayInput) birthdayInput.value = contact.birthday || '';
+        if (personaTextarea) personaTextarea.value = contact.persona || '';
+        if (contact.avatar && avatarEl) avatarEl.setAttribute('data-src', contact.avatar);
+    }
 }
 
 function closeContactEditor() {
@@ -107,7 +136,12 @@ function setCeAvatarImage(src) {
 
 // 保存联系人
 function saveContact(editId) {
-    var name = document.getElementById('ce-name').value.trim();
+    var nameEl = document.getElementById('ce-name');
+    if (!nameEl) {
+        showToast('页面加载异常，请重试');
+        return;
+    }
+    var name = nameEl.value.trim();
     if (!name) {
         showToast('请输入姓名');
         return;
