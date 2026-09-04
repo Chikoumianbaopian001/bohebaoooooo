@@ -80,6 +80,7 @@ input, textarea {
     color: #333;
     position: relative;
     z-index: 10;
+    flex-shrink: 0;
 }
 
 .status-left {
@@ -132,8 +133,10 @@ input, textarea {
     align-items: center;
 }
 
-.status-wifi svg {
-    display: block;
+.status-wifi img {
+    width: 15px;
+    height: 15px;
+    object-fit: contain;
 }
 
 /* 电池图标 - 仿iOS */
