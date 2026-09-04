@@ -133,7 +133,6 @@ async function callAPI(apiKey, apiUrl, model, messages, signal) {
 
 // ===== 构建发送给API的消息 =====
 // 修复 buildMessages 函数，添加 userMessage 参数
-
 function buildMessages(history, userMessage) {
     const chatSettings = getChatSettings();
 
@@ -141,23 +140,44 @@ function buildMessages(history, userMessage) {
     var aiPersona = '';
     var contacts = getContacts();
     var currentContact = contacts.find(function(c) { return c.id === currentChatAI; });
-    if (currentContact && currentContact.persona) {
-        aiPersona = currentContact.persona;
+    if (currentContact) {
+        var aiParts = [];
+        if (currentContact.name) aiParts.push('姓名：' + currentContact.name);
+        if (currentContact.gender) aiParts.push('性别：' + currentContact.gender);
+        if (currentContact.birthday) aiParts.push('生日：' + currentContact.birthday);
+        if (currentContact.persona) aiParts.push('人设：' + currentContact.persona);
+        aiPersona = aiParts.join('\n');
     }
-    
-    const systemPrompt = buildSystemPrompt({
+
+    // 获取用户人设
+    var userPersona = '';
+    var chatSettings2 = JSON.parse(localStorage.getItem('ai-phone-chat-settings') || '{}');
+    if (chatSettings2.userPersonaId) {
+        var personas = getUserPersonas();
+        var up = personas.find(function(p) { return p.id === chatSettings2.userPersonaId; });
+        if (up) {
+            var parts = [];
+            if (up.name) parts.push('姓名：' + up.name);
+            if (up.gender) parts.push('性别：' + up.gender);
+            if (up.birthday) parts.push('出生年月：' + up.birthday);
+            if (up.persona) parts.push('人设：' + up.persona);
+            userPersona = parts.join('\n');
+        }
+    }
+
+    var systemPrompt = buildSystemPrompt({
         scene: 'online',
         aiPersona: aiPersona,
-        userPersona: '',
-        worldBooks: getEnabledWorldBooks(userMessage || '')  // ← 修复：用参数代替未定义的text
+        userPersona: userPersona,
+        worldBooks: getEnabledWorldBooks(userMessage || '')
     });
 
     // 时间感知
-    let timeInfo = '';
+    var timeInfo = '';
     if (chatSettings.timeAware) {
-        const now = new Date();
-        const hours = now.getHours();
-        let period = '凌晨';
+        var now = new Date();
+        var hours = now.getHours();
+        var period = '凌晨';
         if (hours >= 6 && hours < 9) period = '早上';
         else if (hours >= 9 && hours < 12) period = '上午';
         else if (hours >= 12 && hours < 14) period = '中午';
@@ -169,21 +189,21 @@ function buildMessages(history, userMessage) {
             String(hours).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0') + '（' + period + '）';
     }
 
-    const messages = [
+    var messages = [
         { role: 'system', content: systemPrompt + timeInfo }
     ];
 
-    // 记忆总结（如果有）
-    const summary = localStorage.getItem('ai-phone-summary-' + currentChatAI);
+    // 记忆总结
+    var summary = localStorage.getItem('ai-phone-summary-' + currentChatAI);
     if (summary) {
         messages.push({ role: 'system', content: '【之前的聊天记忆总结】\n' + summary });
     }
 
-    // 过滤掉已删除的消息，只保留最近的消息
-    const validHistory = history.filter(h => !h.deleted);
-    const recentHistory = validHistory.slice(-40); // 最近40条
+    // 过滤已删除消息，保留最近40条
+    var validHistory = history.filter(function(h) { return !h.deleted; });
+    var recentHistory = validHistory.slice(-40);
 
-    recentHistory.forEach(h => {
+    recentHistory.forEach(function(h) {
         messages.push({ role: h.role, content: h.content });
     });
 
