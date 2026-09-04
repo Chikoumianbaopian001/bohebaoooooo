@@ -185,14 +185,14 @@
 
         <div class="wechat-header">
             <div class="wechat-header-left">
-                <span class="wechat-back" onclick="switchPage('page-home')">←</span>
+                <span class="cs-back" onclick="switchPage('page-chat')"><img src="https://nos.netease.com/ysf/306ec73897db4f75dc41a5fe14d6652f.png" alt="返回" style="width:22px;height:22px;object-fit:contain;"></span>
             </div>
             <div class="wechat-header-title" id="wechat-title">微信</div>
             <div class="wechat-header-right">
                 <span class="wechat-header-btn" onclick="openSearch()">
                     <img src="https://nos.netease.com/ysf/dd1bd8dcbc5d3cd756b5d5525143aa83.png" alt="搜索">
                 </span>
-                <span class="wechat-header-btn" onclick="openAdd()">➕</span>
+                <span class="wechat-header-btn" onclick="openAdd()"><img src="https://nos.netease.com/ysf/5c95f78e21750ed818f16ce027fb4d08.png" alt="添加"></span>
             </div>
         </div>
 
@@ -250,22 +250,22 @@
 
             <!-- 我的 -->
             <div class="wechat-tab-content" id="tab-profile">
-                <div class="profile-card">
-                    <div class="profile-avatar" id="my-avatar" onclick="setMyAvatar()">👤</div>
+                <div class="profile-card" onclick="openMyProfile()">
+                    <div class="profile-avatar" id="my-avatar">👤</div>
                     <div class="profile-info">
-                        <div class="profile-name" id="my-name">点击设置昵称</div>
-                        <div class="profile-id">微信号：AI-Phone</div>
+                        <div class="profile-name" id="my-name">点击设置</div>
+                        <div class="profile-id" id="my-wechat-id">微信号：AI-Phone</div>
                     </div>
                     <span class="profile-arrow">›</span>
                 </div>
                 <div class="profile-menu">
-                    <div class="profile-menu-item" onclick="openMyPersona()">
-                        <span class="menu-icon">😀</span>
+                    <div class="profile-menu-item" onclick="switchPage('page-my-persona')">
+                        <span class="menu-icon"><img src="https://nos.netease.com/ysf/fb0a34a2ef2e6d518e901319f93dd419.png" alt="人设" style="width:20px;height:20px;object-fit:contain;"></span>
                         <span class="menu-text">我的人设</span>
                         <span class="menu-arrow">›</span>
                     </div>
                     <div class="profile-menu-item" onclick="openWallet()">
-                        <span class="menu-icon">💰</span>
+                        <span class="menu-icon"><img src="https://nos.netease.com/ysf/68edd0645df0ed6f35d2946349c67109.png" alt="钱包" style="width:20px;height:20px;object-fit:contain;"></span>
                         <span class="menu-text">钱包</span>
                         <span class="menu-arrow">›</span>
                     </div>
@@ -277,7 +277,7 @@
                         <span class="menu-arrow">›</span>
                     </div>
                     <div class="profile-menu-item" onclick="openWechatSettings()">
-                        <span class="menu-icon">⚙️</span>
+                        <span class="menu-icon"><img src="https://nos.netease.com/ysf/eaf04789c76f344aa771d4b9596c829f.png" alt="设置" style="width:20px;height:20px;object-fit:contain;"></span>
                         <span class="menu-text">设置</span>
                         <span class="menu-arrow">›</span>
                     </div>
@@ -637,7 +637,7 @@
             </div>
         </div>
         <div class="cs-header">
-            <span class="cs-back" onclick="switchPage('page-chat')">←</span>
+            <span class="cs-back" onclick="switchPage('page-chat')"><img src="https://nos.netease.com/ysf/306ec73897db4f75dc41a5fe14d6652f.png" alt="返回" style="width:22px;height:22px;object-fit:contain;"></span>
             <span class="cs-title">聊天设置</span>
             <span class="cs-placeholder"></span>
         </div>
@@ -648,6 +648,16 @@
                 <div class="cs-card-desc">留空则默认显示AI的名字</div>
                 <div class="cs-input-group">
                     <input type="text" class="cs-text-input" id="cs-nickname" placeholder="给TA起个备注...">
+                </div>
+            </div>
+				
+			<!-- 用户人设选择 -->
+            <div class="cs-card">
+                <div class="cs-card-title">对话人设</div>
+                <div class="cs-card-desc">选择与该AI对话时使用的人设</div>
+                <div class="cs-card-toggle-row" onclick="openUserPersonaSelect()" style="cursor:pointer;">
+                    <span class="cs-toggle-label" id="cs-user-persona-name">未选择</span>
+                    <span class="cs-arrow">›</span>
                 </div>
             </div>
 
@@ -832,7 +842,7 @@
     <!-- ========== 气泡CSS编辑 ========== -->
     <div id="page-bubble-css" class="page">
         <div class="cs-header">
-            <span class="cs-back" onclick="switchPage('page-chat-settings')">←</span>
+            <span class="cs-back" onclick="switchPage('page-chat')"><img src="https://nos.netease.com/ysf/306ec73897db4f75dc41a5fe14d6652f.png" alt="返回" style="width:22px;height:22px;object-fit:contain;"></span>
             <span class="cs-title">气泡CSS</span>
             <span class="cs-save" onclick="saveBubbleCss()">保存</span>
         </div>
@@ -857,7 +867,7 @@
     <!-- ========== 界面CSS编辑 ========== -->
     <div id="page-ui-css" class="page">
         <div class="cs-header">
-            <span class="cs-back" onclick="switchPage('page-chat-settings')">←</span>
+            <span class="cs-back" onclick="switchPage('page-chat')"><img src="https://nos.netease.com/ysf/306ec73897db4f75dc41a5fe14d6652f.png" alt="返回" style="width:22px;height:22px;object-fit:contain;"></span>
             <span class="cs-title">界面CSS</span>
             <span class="cs-save" onclick="saveUiCss()">保存</span>
         </div>
@@ -874,6 +884,30 @@
 }"></textarea>
         </div>
     </div>
+    <!-- ========== 我的资料编辑弹窗（复用modal） ========== -->
+
+    <!-- ========== 我的人设页面 ========== -->
+    <div id="page-my-persona" class="page">
+        <div class="status-bar app-status-bar">
+            <div class="status-left"><span class="status-time-small">14:30</span></div>
+            <div class="status-center"></div>
+            <div class="status-right">
+                <div class="signal-icon"><div class="signal-bar bar-1"></div><div class="signal-bar bar-2"></div><div class="signal-bar bar-3"></div><div class="signal-bar bar-4"></div></div>
+                <span class="status-wifi"><img src="https://nos.netease.com/ysf/c4b8a5f0091ef9ba2f3535df2a4bd032.png" alt="wifi"></span>
+                <div class="battery-icon"><div class="battery-body"><div class="battery-level"></div></div><div class="battery-tip"></div></div>
+                <span class="battery-percent">100%</span>
+            </div>
+        </div>
+        <div class="cs-header">
+            <span class="cs-back" onclick="switchPage('page-wechat'); switchWechatTab('profile', document.querySelectorAll('.wechat-tab')[3])"><img src="https://nos.netease.com/ysf/306ec73897db4f75dc41a5fe14d6652f.png" alt="返回" style="width:22px;height:22px;object-fit:contain;"></span>
+            <span class="cs-title">我的人设</span>
+            <span class="cs-save" onclick="openUserPersonaEditor(null)">+ 添加</span>
+        </div>
+        <div class="cs-body" id="user-persona-list">
+            <div style="text-align:center;color:#999;padding:40px 0;font-size:14px;">暂无人设，点击右上角添加</div>
+        </div>
+    </div>
+
 
 	<!-- ========== 世界书页面 ========== -->
 	<div id="page-worldbook" class="page">
@@ -888,7 +922,7 @@
             </div>
         </div>
 	    <div class="cs-header">
-	        <span class="cs-back" onclick="switchPage('page-home')">←</span>
+	        <span class="cs-back" onclick="switchPage('page-chat')"><img src="https://nos.netease.com/ysf/306ec73897db4f75dc41a5fe14d6652f.png" alt="返回" style="width:22px;height:22px;object-fit:contain;"></span>
 	        <span class="cs-title">世界书</span>
 	        <span class="cs-save" onclick="openWorldBookEditor(null)">+ 添加</span>
 	    </div>
@@ -910,7 +944,7 @@
         </div>
     </div>
     <div class="cs-header">
-        <span class="cs-back" onclick="switchPage('page-home')">←</span>
+        <span class="cs-back" onclick="switchPage('page-chat')"><img src="https://nos.netease.com/ysf/306ec73897db4f75dc41a5fe14d6652f.png" alt="返回" style="width:22px;height:22px;object-fit:contain;"></span>
         <span class="cs-title">设置</span>
         <span class="cs-placeholder"></span>
     </div>
@@ -1025,7 +1059,9 @@
     <script src="js/config.js"></script>
     <script src="js/app.js"></script>
     <script src="js/contacts.js"></script>
+    <script src="js/profile.js"></script>
     <script src="js/chat.js"></script>
     <script src="js/worldbook.js"></script>
+
 </body>
 </html>
