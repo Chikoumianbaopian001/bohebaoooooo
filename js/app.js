@@ -365,6 +365,18 @@ function togglePlus() {
     emojiPanel.style.display = 'none';
     panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
 }
+// ----- 点击外部关闭加号/表情面板 -----
+(function() {
+    document.getElementById('chat-messages')?.addEventListener('click', function() {
+        document.getElementById('emoji-panel').style.display = 'none';
+        document.getElementById('plus-panel').style.display = 'none';
+    });
+
+    document.querySelector('.chat-header')?.addEventListener('click', function() {
+        document.getElementById('emoji-panel').style.display = 'none';
+        document.getElementById('plus-panel').style.display = 'none';
+    });
+})();
 
 function toggleVoiceText(voiceEl) {
     const wrap = voiceEl.closest('.msg-bubble-wrap');
@@ -620,15 +632,52 @@ function loadChatSettings() {
 let pendingSingleDelete = false;
 function closeDeleteConfirm() { document.getElementById('delete-confirm-modal').style.display = 'none'; pendingSingleDelete = false; }
 function confirmDelete() {
+    var history = getChatHistory();
+
     if (pendingSingleDelete && currentMsgRow) {
-        currentMsgRow.classList.add('deleted'); currentMsgRow.setAttribute('data-deleted', 'true');
-        showToast('已删除'); pendingSingleDelete = false;
+        // 单条删除
+        var bubble = currentMsgRow.querySelector('.msg-bubble');
+        if (bubble) {
+            var msgText = bubble.textContent;
+            var isRight = currentMsgRow.classList.contains('msg-right');
+            var role = isRight ? 'user' : 'assistant';
+            // 在历史中标记删除
+            for (var i = history.length - 1; i >= 0; i--) {
+                if (history[i].role === role && history[i].content === msgText && !history[i].deleted) {
+                    history[i].deleted = true;
+                    break;
+                }
+            }
+        }
+        currentMsgRow.classList.add('deleted');
+        currentMsgRow.setAttribute('data-deleted', 'true');
+        showToast('已删除');
+        pendingSingleDelete = false;
     } else {
-        const selected = document.querySelectorAll('.msg-row.selected');
-        const count = selected.length;
-        selected.forEach(el => { el.classList.add('deleted'); el.setAttribute('data-deleted', 'true'); });
-        exitMultiSelect(); showToast('已删除 ' + count + ' 条消息');
+        // 多选删除
+        var selected = document.querySelectorAll('.msg-row.selected');
+        selected.forEach(function(el) {
+            var bubble = el.querySelector('.msg-bubble');
+            if (bubble) {
+                var msgText = bubble.textContent;
+                var isRight = el.classList.contains('msg-right');
+                var role = isRight ? 'user' : 'assistant';
+                for (var i = history.length - 1; i >= 0; i--) {
+                    if (history[i].role === role && history[i].content === msgText && !history[i].deleted) {
+                        history[i].deleted = true;
+                        break;
+                    }
+                }
+            }
+            el.classList.add('deleted');
+            el.setAttribute('data-deleted', 'true');
+        });
+        exitMultiSelect();
+        showToast('已删除 ' + selected.length + ' 条消息');
     }
+
+    // ★ 保存到历史记录
+    saveChatHistory(currentChatAI, history);
     closeDeleteConfirm();
 }
 
