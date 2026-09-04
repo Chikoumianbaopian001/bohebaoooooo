@@ -185,7 +185,7 @@
 
         <div class="wechat-header">
             <div class="wechat-header-left">
-                <span class="cs-back" onclick="switchPage('page-chat')"><img src="https://nos.netease.com/ysf/306ec73897db4f75dc41a5fe14d6652f.png" alt="返回" style="width:22px;height:22px;object-fit:contain;"></span>
+                <span class="wechat-back" onclick="switchPage('page-home')"><img src="https://nos.netease.com/ysf/306ec73897db4f75dc41a5fe14d6652f.png" alt="返回" style="width:22px;height:22px;object-fit:contain;"></span>
             </div>
             <div class="wechat-header-title" id="wechat-title">微信</div>
             <div class="wechat-header-right">
@@ -320,21 +320,22 @@
 
         <!-- 顶部栏 -->
         <div class="chat-header">
-            <div class="chat-header-left">
-                <span class="chat-back" onclick="closeChat()">
-                    <img src="https://nos.netease.com/ysf/306ec73897db4f75dc41a5fe14d6652f.png" alt="返回">
-                </span>
-            </div>
-            <div class="chat-header-center">
-                <span class="chat-header-name" id="chat-header-name">AI助手</span>
-            </div>
-            <div class="chat-header-right">
-                <span class="chat-header-btn" onclick="openCallChoice()">
-                    <img src="https://nos.netease.com/ysf/96516362a3b96bd114f72da73e3c07a1.png" alt="通话">
-                </span>
-                <span class="chat-header-btn" onclick="switchPage('page-chat-settings')">⋯</span>
-            </div>
-        </div>
+		    <div class="chat-header-left">
+		        <span class="chat-back" onclick="closeChat()">
+		            <img src="https://nos.netease.com/ysf/306ec73897db4f75dc41a5fe14d6652f.png" alt="返回" style="width:22px;height:22px;object-fit:contain;">
+		        </span>
+		    </div>
+		    <div class="chat-header-center">
+		        <span class="chat-header-name" id="chat-header-name">AI助手</span>
+		    </div>
+		    <div class="chat-header-right">
+		        <span class="chat-header-btn" onclick="openCallChoice()">
+		            <img src="https://nos.netease.com/ysf/96516362a3b96bd114f72da73e3c07a1.png" alt="通话">
+		        </span>
+		        <span class="chat-header-btn" onclick="switchPage('page-chat-settings')">⋯</span>
+		    </div>
+		</div>
+
 
         <!-- 消息区域 -->
         <div class="chat-messages" id="chat-messages">
@@ -842,7 +843,7 @@
     <!-- ========== 气泡CSS编辑 ========== -->
     <div id="page-bubble-css" class="page">
         <div class="cs-header">
-            <span class="cs-back" onclick="switchPage('page-chat')"><img src="https://nos.netease.com/ysf/306ec73897db4f75dc41a5fe14d6652f.png" alt="返回" style="width:22px;height:22px;object-fit:contain;"></span>
+            <span class="cs-back" onclick="switchPage('page-chat-settings')"><img src="https://nos.netease.com/ysf/306ec73897db4f75dc41a5fe14d6652f.png" alt="返回" style="width:22px;height:22px;object-fit:contain;"></span>
             <span class="cs-title">气泡CSS</span>
             <span class="cs-save" onclick="saveBubbleCss()">保存</span>
         </div>
@@ -867,7 +868,7 @@
     <!-- ========== 界面CSS编辑 ========== -->
     <div id="page-ui-css" class="page">
         <div class="cs-header">
-            <span class="cs-back" onclick="switchPage('page-chat')"><img src="https://nos.netease.com/ysf/306ec73897db4f75dc41a5fe14d6652f.png" alt="返回" style="width:22px;height:22px;object-fit:contain;"></span>
+            <span class="cs-back" onclick="switchPage('page-chat-settings')"><img src="https://nos.netease.com/ysf/306ec73897db4f75dc41a5fe14d6652f.png" alt="返回" style="width:22px;height:22px;object-fit:contain;"></span>
             <span class="cs-title">界面CSS</span>
             <span class="cs-save" onclick="saveUiCss()">保存</span>
         </div>
@@ -922,8 +923,8 @@
             </div>
         </div>
 	    <div class="cs-header">
-	        <span class="cs-back" onclick="switchPage('page-chat')"><img src="https://nos.netease.com/ysf/306ec73897db4f75dc41a5fe14d6652f.png" alt="返回" style="width:22px;height:22px;object-fit:contain;"></span>
-	        <span class="cs-title">世界书</span>
+	        <span class="cs-back" onclick="switchPage('page-home')"><img src="https://nos.netease.com/ysf/306ec73897db4f75dc41a5fe14d6652f.png" alt="返回" style="width:22px;height:22px;object-fit:contain;"></span>
+        	<span class="cs-title">世界书</span>
 	        <span class="cs-save" onclick="openWorldBookEditor(null)">+ 添加</span>
 	    </div>
 	    <div class="wb-body" id="worldbook-body">
@@ -944,7 +945,7 @@
         </div>
     </div>
     <div class="cs-header">
-        <span class="cs-back" onclick="switchPage('page-chat')"><img src="https://nos.netease.com/ysf/306ec73897db4f75dc41a5fe14d6652f.png" alt="返回" style="width:22px;height:22px;object-fit:contain;"></span>
+        <span class="cs-back" onclick="switchPage('page-home')"><img src="https://nos.netease.com/ysf/306ec73897db4f75dc41a5fe14d6652f.png" alt="返回" style="width:22px;height:22px;object-fit:contain;"></span>
         <span class="cs-title">设置</span>
         <span class="cs-placeholder"></span>
     </div>
