@@ -296,19 +296,27 @@ function importWbFile() {
 // 简单的docx文本提取
 async function extractDocxText(arrayBuffer) {
     try {
-        // 使用JSZip解析docx（如果没有JSZip就降级处理）
-        if (typeof JSZip !== 'undefined') {
-            var zip = await JSZip.loadAsync(arrayBuffer);
-            var doc = await zip.file('word/document.xml').async('string');
-            // 提取文本
-            var text = doc.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-            return text;
-        } else {
-            // 没有JSZip，提示用户
-            return '（docx解析需要JSZip库，建议转换为txt格式后导入）';
+        if (typeof JSZip === 'undefined') {
+            return '（需要JSZip库，建议转换为txt格式导入）';
         }
+        var zip = await JSZip.loadAsync(arrayBuffer);
+        var docFile = zip.file('word/document.xml');
+        if (!docFile) return '（无法读取docx内容）';
+        var xmlStr = await docFile.async('string');
+        // 提取所有文本节点
+        var text = xmlStr
+            .replace(/<w:p[^>]*>/g, '\n')
+            .replace(/<[^>]+>/g, '')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&amp;/g, '&')
+            .replace(/&quot;/g, '"')
+            .replace(/\n{3,}/g, '\n\n')
+            .trim();
+        return text;
     } catch (err) {
-        return '（docx解析失败，建议转换为txt格式后导入）';
+        console.error('docx解析失败:', err);
+        return '（docx解析失败，建议转换为txt格式导入）';
     }
 }
 
