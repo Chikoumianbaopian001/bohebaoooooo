@@ -231,13 +231,14 @@ function openContactProfile(id) {
 
     // 头像和基本信息
     html += '<div class="cp-header">';
-    html += '<div class="cp-avatar">';
+    html += '<div class="cp-avatar" id="cp-avatar-' + id + '" onclick="changeContactAvatar(\'' + id + '\')" style="cursor:pointer;">';
     if (contact.avatar) {
         html += '<img src="' + contact.avatar + '">';
     } else {
         html += '🤖';
     }
     html += '</div>';
+    html += '<div class="cp-avatar-hint" style="font-size:11px;color:#999;margin-top:4px;">点击更换头像</div>';
     html += '<div class="cp-name">' + contact.name + '</div>';
     html += '<div class="cp-gender">' + (contact.gender || '未设置') + '</div>';
     html += '</div>';
@@ -269,6 +270,63 @@ function openContactProfile(id) {
 function closeContactProfile() {
     var container = document.getElementById('contact-profile-container');
     if (container) container.remove();
+}
+function changeContactAvatar(id) {
+    var html = '<div class="modal-overlay" id="cp-avatar-modal" onclick="closeCpAvatarModal()">';
+    html += '<div class="modal-box" onclick="event.stopPropagation()">';
+    html += '<h3>🖼️ 更换头像</h3>';
+    html += '<label>图片URL</label><input type="text" id="cp-avatar-url" placeholder="输入图片链接">';
+    html += '<label>或上传图片</label><input type="file" id="cp-avatar-file" accept="image/*">';
+    html += '<div class="modal-buttons"><button class="modal-cancel" onclick="closeCpAvatarModal()">取消</button><button class="modal-confirm" onclick="applyCpAvatar(\'' + id + '\')">确认</button></div>';
+    html += '</div></div>';
+
+    var div = document.createElement('div');
+    div.id = 'cp-avatar-modal-container';
+    div.innerHTML = html;
+    document.body.appendChild(div);
+}
+
+function closeCpAvatarModal() {
+    var c = document.getElementById('cp-avatar-modal-container');
+    if (c) c.remove();
+}
+
+function applyCpAvatar(id) {
+    var url = document.getElementById('cp-avatar-url').value.trim();
+    var fileInput = document.getElementById('cp-avatar-file');
+
+    function saveAvatar(src) {
+        // 更新联系人数据
+        var contacts = getContacts();
+        var contact = contacts.find(function(c) { return c.id === id; });
+        if (contact) {
+            contact.avatar = src;
+            saveContacts(contacts);
+        }
+
+        // 更新资料卡头像
+        var avatarEl = document.getElementById('cp-avatar-' + id);
+        if (avatarEl) {
+            avatarEl.innerHTML = '<img src="' + src + '">';
+        }
+
+        // 刷新列表
+        renderContactsList();
+        renderChatList();
+
+        closeCpAvatarModal();
+        showToast('头像已更换');
+    }
+
+    if (fileInput.files && fileInput.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            saveAvatar(e.target.result);
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+    } else if (url) {
+        saveAvatar(url);
+    }
 }
 
 // 编辑联系人
