@@ -206,21 +206,32 @@ function appendMessage(text, type) {
 
     const avatar = document.createElement('div');
     avatar.className = 'msg-avatar';
-    avatar.textContent = type === 'ai' ? '🤖' : '👤';
+
+    // ★ AI消息读取联系人头像
+    if (type === 'ai') {
+        var contacts = getContacts();
+        var contact = contacts.find(function(c) { return c.id === currentChatAI; });
+        if (contact && contact.avatar) {
+            avatar.innerHTML = '<img src="' + contact.avatar + '">';
+        } else {
+            avatar.textContent = '🤖';
+        }
+    } else {
+        avatar.textContent = '👤';
+    }
 
     const wrap = document.createElement('div');
     wrap.className = 'msg-bubble-wrap';
 
     const bubble = document.createElement('div');
     bubble.className = 'msg-bubble ' + (type === 'ai' ? 'left' : 'right');
-    bubble.textContent = text;
+    bubble.textContent = text.replace(/\\n/g, '').replace(/\n/g, '').trim();
 
     wrap.appendChild(bubble);
     row.appendChild(avatar);
     row.appendChild(wrap);
     container.appendChild(row);
 
-    // 滚动到底部
     container.scrollTop = container.scrollHeight;
 
     return row;
@@ -235,7 +246,15 @@ function appendLoading() {
 
     const avatar = document.createElement('div');
     avatar.className = 'msg-avatar';
-    avatar.textContent = '🤖';
+
+    // ★ 读取联系人头像
+    var contacts = getContacts();
+    var contact = contacts.find(function(c) { return c.id === currentChatAI; });
+    if (contact && contact.avatar) {
+        avatar.innerHTML = '<img src="' + contact.avatar + '">';
+    } else {
+        avatar.textContent = '🤖';
+    }
 
     const wrap = document.createElement('div');
     wrap.className = 'msg-bubble-wrap';
@@ -280,25 +299,43 @@ function delay(ms) {
 
 // 将回复分割成多条消息
 function splitReply(text, count) {
-    if (count <= 1) return [text];
+    if (count <= 1) {
+        // 只要1条，整段发，清理换行
+        return [text.replace(/\n/g, '').trim()];
+    }
 
-    // 按换行或句号分割
-    const sentences = text.split(/(?<=[。！？\n])/g).filter(s => s.trim());
+    // 先按换行分割
+    var lines = text.split('\n').filter(function(s) { return s.trim(); });
 
-    if (sentences.length <= 1) return [text];
+    // 如果只分出一行，再按句号等分割
+    if (lines.length <= 1 && lines[0]) {
+        lines = lines[0].split(/(?<=[。！？!?])/).filter(function(s) { return s.trim(); });
+    }
 
-    // 将句子分配到count组
-    const result = [];
-    const perGroup = Math.ceil(sentences.length / count);
+    // 只有一句直接返回
+    if (lines.length <= 1) return [lines[0] || text.replace(/\n/g, '').trim()];
 
-    for (let i = 0; i < count; i++) {
-        const start = i * perGroup;
-        const end = Math.min(start + perGroup, sentences.length);
-        const group = sentences.slice(start, end).join('').trim();
+    // ★ 关键：如果句子数 <= count，每句一条
+    if (lines.length <= count) {
+        return lines.map(function(s) { return s.trim(); });
+    }
+
+    // ★ 句子数 > count，合并到 count 组
+    var result = [];
+    var perGroup = Math.ceil(lines.length / count);
+    for (var i = 0; i < count; i++) {
+        var start = i * perGroup;
+        var end = Math.min(start + perGroup, lines.length);
+        var group = lines.slice(start, end).join('').trim();
         if (group) result.push(group);
     }
 
-    return result.length > 0 ? result : [text];
+    // ★ 确保不超过 count 条
+    if (result.length > count) {
+        result = result.slice(0, count);
+    }
+
+    return result.length > 0 ? result : [text.replace(/\n/g, '').trim()];
 }
 
 // 检测是否需要翻译（简单的非中文检测）
@@ -375,9 +412,12 @@ async function performSummary(history, fromIndex) {
     const apiSettings = getAPISettings();
     if (!apiSettings.apiKey) return;
 
-    // 取需要总结的消息
     const toSummarize = history.slice(fromIndex);
     if (toSummarize.length === 0) return;
+
+    // ★ 读取用户设置的字数上限
+    var chatSettings = getChatSettings();
+    var maxWords = parseInt(chatSettings.summaryWords) || 300;
 
     let chatText = '';
     toSummarize.forEach(h => {
@@ -394,12 +434,11 @@ async function performSummary(history, fromIndex) {
             body: JSON.stringify({
                 model: apiSettings.apiModel,
                 messages: [
-                    { role: 'system', content: '请总结以下对话的关键信息、情感变化、重要事件，用简洁的方式概括，保留重要细节。不超过300字。' },
+                    { role: 'system', content: '请总结以下对话的关键信息、情感变化、重要事件，用简洁的方式概括，保留重要细节。不超过' + maxWords + '字。' },
                     { role: 'user', content: chatText }
                 ]
             })
         });
-
         const data = await response.json();
         if (data.choices && data.choices[0]) {
             const summary = data.choices[0].message.content.trim();
@@ -523,9 +562,24 @@ function loadChatMessages(aiId) {
         appendMessage(h.content, h.role === 'user' ? 'user' : 'ai');
     });
 
+    // ★ 加载备注名
+    var chatSettings = getChatSettings();
+    var headerName = document.getElementById('chat-header-name');
+    if (headerName) {
+        if (chatSettings.nickname) {
+            headerName.textContent = chatSettings.nickname;
+        } else {
+            var contacts = getContacts();
+            var contact = contacts.find(function(c) { return c.id === currentChatAI; });
+            if (contact) headerName.textContent = contact.name;
+        }
+    }
+
     // 滚动到底部
     container.scrollTop = container.scrollHeight;
+    onChatInputChange();
 }
+
 // ===== 手动触发AI回复 =====
 function triggerAIReply() {
     if (isGenerating) return;
@@ -583,13 +637,15 @@ function triggerAIReply() {
                     await delay(300 + Math.random() * 700);
                     if (!isGenerating) break;
                     var msgEl = appendMessage(replies[i], 'ai');
+                    // ★ 每段单独存历史
+                    history.push({ role: 'assistant', content: replies[i], time: Date.now() });
                     if (chatSettings.translate && needsTranslation(replies[i])) {
                         await translateAndAppend(replies[i], msgEl);
                     }
                 }
 
-                history.push({ role: 'assistant', content: parsed.reply, time: Date.now() });
                 saveChatHistory(currentChatAI, history);
+
                 if (parsed.heartData.heart) saveHeartHistory(parsed.heartData);
                 checkAutoSummary(history);
                 updateChatListPreview(parsed.reply);
@@ -634,18 +690,14 @@ function onChatInputChange() {
     if (stopBtn) stopBtn.style.display = 'none';
 
     if (isGenerating) {
+        // AI思考中 → 终止键
         if (stopBtn) stopBtn.style.display = 'inline-flex';
     } else if (text.length > 0) {
+        // 有文字 → 发送键
         if (sendBtn) sendBtn.style.display = 'inline-block';
     } else {
-        // 无文字：检查最后一条消息
-        var history = getChatHistory();
-        var lastMsg = history.length > 0 ? history[history.length - 1] : null;
-        if (lastMsg && lastMsg.role === 'user') {
-            if (replyBtn) replyBtn.style.display = 'inline-flex';
-        } else {
-            if (stopBtn) stopBtn.style.display = 'inline-flex';
-        }
+        // 无文字 → 回复键（常驻）
+        if (replyBtn) replyBtn.style.display = 'inline-flex';
     }
 }
 
