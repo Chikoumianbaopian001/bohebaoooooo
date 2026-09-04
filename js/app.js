@@ -28,6 +28,9 @@ function switchPage(pageId) {
     if (target) {
         target.classList.add('active');
     }
+    // ★ 切换页面后重新应用状态栏状态
+    var saved = localStorage.getItem('ai-phone-statusbar-enabled');
+    applyStatusBar(saved !== 'false');
 }
 
 // ----- 锁屏开关检测 -----
@@ -42,6 +45,35 @@ function toggleLockScreen() {
     const enabled = document.getElementById('global-lock-enabled').checked;
     localStorage.setItem('ai-phone-lock-enabled', enabled ? 'true' : 'false');
 }
+
+// ----- 状态栏开关 -----
+function toggleStatusBar() {
+    var enabled = document.getElementById('global-statusbar-enabled').checked;
+    localStorage.setItem('ai-phone-statusbar-enabled', enabled ? 'true' : 'false');
+    applyStatusBar(enabled);
+}
+
+function applyStatusBar(enabled) {
+    document.querySelectorAll('.status-bar').forEach(function(bar) {
+        if (enabled) {
+            bar.style.display = 'flex';
+        } else {
+            bar.style.display = 'none';
+        }
+    });
+}
+
+// 加载状态栏开关状态
+(function() {
+    var saved = localStorage.getItem('ai-phone-statusbar-enabled');
+    var enabled = saved !== 'false';
+    var checkbox = document.getElementById('global-statusbar-enabled');
+    if (checkbox) checkbox.checked = enabled;
+    // 延迟执行，确保DOM都加载完
+    setTimeout(function() {
+        applyStatusBar(enabled);
+    }, 100);
+})();
 
 // 加载锁屏开关状态
 (function() {
@@ -416,32 +448,132 @@ function addToWallet(amount) { setWalletBalance(getWalletBalance() + amount); }
 function subtractFromWallet(amount) { const b = getWalletBalance(); if (b >= amount) { setWalletBalance(b - amount); return true; } return false; }
 
 // ----- 全局设置 -----
+// 替换原来的 saveGlobalSettings 和 loadGlobalSettings
+
 function saveGlobalSettings() {
-    const settings = {
-        // 主API
-        apiKey: document.getElementById('global-api-key').value,
-        apiUrl: document.getElementById('global-api-url').value || 'https://api.openai.com/v1/chat/completions',
-        apiModel: document.getElementById('global-api-model').value || 'gpt-3.5-turbo',
-        // 副API
-        subApiKey: document.getElementById('global-sub-api-key').value,
-        subApiUrl: document.getElementById('global-sub-api-url').value,
-        subApiModel: document.getElementById('global-sub-api-model').value,
-        // Minimax语音
-        minimaxKey: document.getElementById('global-minimax-key').value,
-        minimaxGroup: document.getElementById('global-minimax-group').value,
-        minimaxUrl: document.getElementById('global-minimax-url').value || 'https://api.minimax.chat/v1/t2a_v2',
-        // 生图
-        imageKey: document.getElementById('global-image-key').value,
-        imageUrl: document.getElementById('global-image-url').value || 'https://api.openai.com/v1/images/generations',
-        imageModel: document.getElementById('global-image-model').value || 'dall-e-3',
+    var settings = {
+        apiKey: document.getElementById('global-api-key').value || '',
+        apiUrl: document.getElementById('global-api-url').value || '',
+        apiModel: document.getElementById('global-api-model').value || '',
+        subApiKey: document.getElementById('global-sub-api-key').value || '',
+        subApiUrl: document.getElementById('global-sub-api-url').value || '',
+        subApiModel: document.getElementById('global-sub-api-model').value || '',
+        minimaxKey: document.getElementById('global-minimax-key').value || '',
+        minimaxGroup: document.getElementById('global-minimax-group').value || '',
+        minimaxUrl: document.getElementById('global-minimax-url').value || '',
+        imageKey: document.getElementById('global-image-key').value || '',
+        imageUrl: document.getElementById('global-image-url').value || '',
+        imageModel: document.getElementById('global-image-model').value || '',
     };
-    localStorage.setItem('ai-phone-global-settings', JSON.stringify(settings));
-    alert('设置已保存！✅');
+    
+    // 调试：检查是否真的读到了值
+    console.log('准备保存的API Key长度:', settings.apiKey.length);
+    console.log('准备保存的API URL:', settings.apiUrl);
+    console.log('准备保存的模型:', settings.apiModel);
+    
+    if (!settings.apiKey && !settings.apiUrl) {
+        console.warn('警告：API Key和URL都为空！');
+    }
+    
+    try {
+        localStorage.setItem('ai-phone-global-settings', JSON.stringify(settings));
+        
+        // 验证保存是否成功
+        var verify = localStorage.getItem('ai-phone-global-settings');
+        if (verify) {
+            var parsed = JSON.parse(verify);
+            console.log('保存验证 - API Key长度:', parsed.apiKey.length);
+            console.log('保存验证 - API URL:', parsed.apiUrl);
+            showToast('设置已保存！✅');
+        } else {
+            console.error('保存后读取失败！');
+            showToast('保存失败！localStorage可能不可用');
+        }
+    } catch(e) {
+        console.error('保存失败:', e);
+        showToast('保存失败：' + e.message);
+    }
 }
+
+function loadGlobalSettings() {
+    try {
+        var saved = localStorage.getItem('ai-phone-global-settings');
+        console.log('读取到的原始数据:', saved ? '有数据(长度' + saved.length + ')' : '无数据');
+        
+        if (!saved) {
+            console.log('没有已保存的设置');
+            return;
+        }
+        
+        var s = JSON.parse(saved);
+        console.log('解析成功，API Key长度:', (s.apiKey || '').length);
+        
+        var fields = {
+            'global-api-key': s.apiKey,
+            'global-api-url': s.apiUrl,
+            'global-api-model': s.apiModel,
+            'global-sub-api-key': s.subApiKey,
+            'global-sub-api-url': s.subApiUrl,
+            'global-sub-api-model': s.subApiModel,
+            'global-minimax-key': s.minimaxKey,
+            'global-minimax-group': s.minimaxGroup,
+            'global-minimax-url': s.minimaxUrl,
+            'global-image-key': s.imageKey,
+            'global-image-url': s.imageUrl,
+            'global-image-model': s.imageModel,
+        };
+        
+        var loadedCount = 0;
+        for (var id in fields) {
+            var el = document.getElementById(id);
+            if (el && fields[id]) {
+                el.value = fields[id];
+                loadedCount++;
+            } else if (!el) {
+                console.warn('找不到元素:', id);
+            }
+        }
+        console.log('成功加载了', loadedCount, '个字段');
+        
+    } catch(e) {
+        console.error('加载设置失败:', e);
+    }
+}
+
+// ★ 删除原来的 DOMContentLoaded 监听器 ★
+// 替换为：
+
+(function initSettings() {
+    function doLoad() {
+        var keyEl = document.getElementById('global-api-key');
+        if (!keyEl) {
+            // 元素还不存在，稍后重试
+            setTimeout(doLoad, 50);
+            return;
+        }
+        loadGlobalSettings();
+        loadChatSettings();
+        
+        // 再延迟一次，对抗浏览器自动填充
+        setTimeout(function() {
+            loadGlobalSettings();
+        }, 500);
+        
+        console.log('✅ 所有设置已加载');
+    }
+    
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        setTimeout(doLoad, 0);
+    } else {
+        document.addEventListener('DOMContentLoaded', doLoad);
+    }
+})();
 
 // ----- 聊天设置 保存/加载 -----
 function saveChatSettings() {
     const cs = {
+    	nickname: document.getElementById('cs-nickname').value,
+        summaryWords: document.getElementById('cs-summary-words').value,
         replyMin: document.getElementById('cs-reply-min').value, replyMax: document.getElementById('cs-reply-max').value,
         memoryMode: document.querySelector('input[name="memory-mode"]:checked')?.value || 'manual',
         memoryCount: document.getElementById('cs-memory-count').value,
@@ -457,6 +589,8 @@ function saveChatSettings() {
 function loadChatSettings() {
     const saved = localStorage.getItem('ai-phone-chat-settings'); if (!saved) return;
     const s = JSON.parse(saved);
+    if (s.nickname) document.getElementById('cs-nickname').value = s.nickname;
+    if (s.summaryWords) document.getElementById('cs-summary-words').value = s.summaryWords;
     if (s.replyMin) document.getElementById('cs-reply-min').value = s.replyMin;
     if (s.replyMax) document.getElementById('cs-reply-max').value = s.replyMax;
     if (s.memoryMode === 'auto') { document.getElementById('cs-memory-auto').checked = true; document.getElementById('cs-auto-setting').style.display = 'block'; }
@@ -473,7 +607,7 @@ function loadChatSettings() {
     if (s.blockAi) document.getElementById('cs-block-ai').checked = true;
     if (s.allowBlock) document.getElementById('cs-allow-block').checked = true;
 }
-loadChatSettings();
+
 (function() {
     const observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(m) { if (m.target.id === 'page-chat-settings' && !m.target.classList.contains('active')) saveChatSettings(); });
@@ -555,8 +689,122 @@ function showContextMenu(msgRow, x, y) {
     menu.style.left = left + 'px'; menu.style.top = top + 'px';
 }
 function hideContextMenu() { document.getElementById('msg-context-menu').style.display = 'none'; }
+//重roll
+function rerollMsg() {
+    hideContextMenu();
+    if (!currentMsgRow) return;
+    if (isGenerating) {
+        showToast('AI正在回复中...');
+        return;
+    }
 
-function rerollMsg() { hideContextMenu(); if (!currentMsgRow) return; const b = currentMsgRow.querySelector('.msg-bubble'); if (!b) return; b.style.opacity = '0.5'; b.textContent = '正在重新生成...'; setTimeout(function() { b.style.opacity = '1'; b.textContent = '（重Roll功能将在接入API后生效）'; }, 1000); }
+    var apiSettings = getAPISettings();
+    if (!apiSettings.apiKey) {
+        showToast('请先在设置中填写API Key');
+        return;
+    }
+
+    var history = getChatHistory();
+
+    // 找到最后一条用户消息的位置
+    var lastUserIndex = -1;
+    for (var i = history.length - 1; i >= 0; i--) {
+        if (history[i].role === 'user') {
+            lastUserIndex = i;
+            break;
+        }
+    }
+
+    if (lastUserIndex === -1) {
+        showToast('找不到用户消息');
+        return;
+    }
+
+    // 删掉这条用户消息之后的所有AI消息
+    var userMsg = history[lastUserIndex];
+    history = history.slice(0, lastUserIndex + 1);
+    saveChatHistory(currentChatAI, history);
+
+    // 从界面上删掉这些AI消息
+    var container = document.getElementById('chat-messages');
+    var rows = container.querySelectorAll('.msg-row');
+    var foundUser = false;
+    for (var j = rows.length - 1; j >= 0; j--) {
+        if (rows[j].classList.contains('msg-right')) {
+            // 碰到用户消息就停
+            break;
+        }
+        if (rows[j].classList.contains('msg-left')) {
+            rows[j].remove();
+        }
+    }
+
+    // 调用AI重新生成
+    var loadingEl = appendLoading();
+    showStopButton();
+    isGenerating = true;
+    abortController = new AbortController();
+
+    (async function() {
+        try {
+            var messages = buildMessages(history, userMsg.content);
+            var data = await callAPI(apiSettings.apiKey, apiSettings.apiUrl, apiSettings.apiModel, messages, abortController.signal);
+
+            if (!data && apiSettings.subApiKey && apiSettings.subApiUrl && isGenerating) {
+                appendSystemMsg('⚠️ 主API不可用，切换到副API...');
+                data = await callAPI(apiSettings.subApiKey, apiSettings.subApiUrl, apiSettings.subApiModel || apiSettings.apiModel, messages, abortController.signal);
+            }
+
+            loadingEl.remove();
+
+            if (!isGenerating) {
+                appendSystemMsg('⏹ 已终止生成');
+                isGenerating = false;
+                hideStopButton();
+                return;
+            }
+
+            if (data && data.choices && data.choices[0]) {
+                var rawReply = data.choices[0].message.content;
+                var parsed = parseAIResponse(rawReply);
+                var chatSettings = getChatSettings();
+                var minCount = parseInt(chatSettings.replyMin) || 1;
+                var maxCount = parseInt(chatSettings.replyMax) || 1;
+                var replyCount = Math.floor(Math.random() * (maxCount - minCount + 1)) + minCount;
+                var replies = splitReply(parsed.reply, replyCount);
+
+                for (var i = 0; i < replies.length; i++) {
+                    if (!isGenerating) break;
+                    await delay(300 + Math.random() * 700);
+                    if (!isGenerating) break;
+                    var msgEl = appendMessage(replies[i], 'ai');
+                    history.push({ role: 'assistant', content: replies[i], time: Date.now() });
+                    if (chatSettings.translate && needsTranslation(replies[i])) {
+                        await translateAndAppend(replies[i], msgEl);
+                    }
+                }
+
+                saveChatHistory(currentChatAI, history);
+                if (parsed.heartData.heart) saveHeartHistory(parsed.heartData);
+                updateChatListPreview(replies[replies.length - 1]);
+            } else {
+                appendSystemMsg('❌ 请求失败，请检查API设置');
+            }
+        } catch (err) {
+            loadingEl.remove();
+            if (err.name === 'AbortError') {
+                appendSystemMsg('⏹ 已终止生成');
+            } else {
+                appendSystemMsg('❌ 错误：' + err.message);
+            }
+        }
+
+        isGenerating = false;
+        hideStopButton();
+        saveChatHistory(currentChatAI, history);
+    })();
+}
+
 function editMsg() {
     hideContextMenu(); if (!currentMsgRow) return;
     const bubble = currentMsgRow.querySelector('.msg-bubble'); if (!bubble || bubble.classList.contains('msg-voice')) return;
@@ -651,16 +899,70 @@ function showToast(msg) {
 let currentHeartData = { heart: '', danmaku: [], bgm: '', strategy: '' };
 
 function parseAIResponse(rawText) {
-    let reply = rawText; let heartData = { heart: '', danmaku: [], bgm: '', strategy: '' };
-    const replyMatch = rawText.match(/\[REPLY\]([\s\S]*?)\[\/REPLY\]/);
-    if (replyMatch) reply = replyMatch[1].trim();
-    const heartMatch = rawText.match(/\[HEART\]([\s\S]*?)\[\/HEART\]/); if (heartMatch) heartData.heart = heartMatch[1].trim();
-    const danmakuMatch = rawText.match(/\[DANMAKU\]([\s\S]*?)\[\/DANMAKU\]/); if (danmakuMatch) heartData.danmaku = danmakuMatch[1].trim().split('|').map(s => s.trim()).filter(s => s);
-    const bgmMatch = rawText.match(/\[BGM\]([\s\S]*?)\[\/BGM\]/); if (bgmMatch) heartData.bgm = bgmMatch[1].trim();
-    const strategyMatch = rawText.match(/\[STRATEGY\]([\s\S]*?)\[\/STRATEGY\]/); if (strategyMatch) heartData.strategy = strategyMatch[1].trim().toLowerCase();
-    if (!replyMatch) reply = rawText.replace(/\[HEART\][\s\S]*?\[\/HEART\]/g, '').replace(/\[DANMAKU\][\s\S]*?\[\/DANMAKU\]/g, '').replace(/\[BGM\][\s\S]*?\[\/BGM\]/g, '').replace(/\[STRATEGY\][\s\S]*?\[\/STRATEGY\]/g, '').trim();
-    if (heartData.heart || heartData.danmaku.length > 0) { currentHeartData = heartData; localStorage.setItem('ai-phone-heart-data', JSON.stringify(heartData)); }
-    return { reply, heartData };
+    if (!rawText) return { reply: '（AI未返回内容）', heartData: { heart: '', danmaku: [], bgm: '', strategy: '' } };
+
+    var reply = rawText;
+    var heartData = { heart: '', danmaku: [], bgm: '', strategy: '' };
+
+    // 提取 [REPLY]
+    var replyMatch = rawText.match(/\[REPLY\]([\s\S]*?)\[\/REPLY\]/);
+    if (replyMatch) {
+        reply = replyMatch[1].trim();
+    }
+
+    // 提取 [HEART]
+    var heartMatch = rawText.match(/\[HEART\]([\s\S]*?)\[\/HEART\]/);
+    if (heartMatch) heartData.heart = heartMatch[1].trim();
+
+    // 提取 [DANMAKU]
+    var danmakuMatch = rawText.match(/\[DANMAKU\]([\s\S]*?)\[\/DANMAKU\]/);
+    if (danmakuMatch) heartData.danmaku = danmakuMatch[1].trim().split('|').map(function(s) { return s.trim(); }).filter(function(s) { return s; });
+
+    // 提取 [BGM]
+    var bgmMatch = rawText.match(/\[BGM\]([\s\S]*?)\[\/BGM\]/);
+    if (bgmMatch) heartData.bgm = bgmMatch[1].trim();
+
+    // 提取 [STRATEGY]
+    var strategyMatch = rawText.match(/\[STRATEGY\]([\s\S]*?)\[\/STRATEGY\]/);
+    if (strategyMatch) heartData.strategy = strategyMatch[1].trim().toLowerCase();
+
+    // 如果没有[REPLY]标记，清除所有标记后剩余的就是回复
+    if (!replyMatch) {
+        reply = rawText
+            .replace(/\[HEART\][\s\S]*?\[\/HEART\]/g, '')
+            .replace(/\[DANMAKU\][\s\S]*?\[\/DANMAKU\]/g, '')
+            .replace(/\[BGM\][\s\S]*?\[\/BGM\]/g, '')
+            .replace(/\[STRATEGY\][\s\S]*?\[\/STRATEGY\]/g, '')
+            .replace(/\[REPLY\]|\[\/REPLY\]/g, '')
+            .trim();
+    } else {
+        // 有[REPLY]标记，也清理一下可能残留的标签
+        reply = reply
+            .replace(/\[REPLY\]|\[\/REPLY\]/g, '')
+            .replace(/\[HEART\][\s\S]*?\[\/HEART\]/g, '')
+            .replace(/\[DANMAKU\][\s\S]*?\[\/DANMAKU\]/g, '')
+            .replace(/\[BGM\][\s\S]*?\[\/BGM\]/g, '')
+            .replace(/\[STRATEGY\][\s\S]*?\[\/STRATEGY\]/g, '')
+            .trim();
+    }
+
+    // 确保reply不为空，但不要用原始带标签的文本
+    if (!reply) {
+        reply = rawText
+            .replace(/\[[\w]+\][\s\S]*?\[\/[\w]+\]/g, '')
+            .replace(/\[[\w]+\]|\[\/[\w]+\]/g, '')
+            .trim();
+    }
+    if (!reply) reply = '（AI未返回有效内容）';
+
+
+    // 更新心声缓存
+    if (heartData.heart || heartData.danmaku.length > 0) {
+        currentHeartData = heartData;
+        localStorage.setItem('ai-phone-heart-data', JSON.stringify(heartData));
+    }
+
+    return { reply: reply, heartData: heartData };
 }
 
 let danmakuTimer = null; let danmakuIndex = 0;
@@ -764,7 +1066,7 @@ function saveHeartCss() { const css = document.getElementById('heart-css-editor'
 // ----- 占位函数 -----
 function openSearch() { alert('搜索功能 - 后续实现'); }
 function openAdd() { alert('添加功能 - 后续实现'); }
-function addNewContact() { alert('添加AI好友 - 后续实现'); }
+
 function postMoment() { alert('发朋友圈 - 后续实现'); }
 function setMyAvatar() { alert('设置头像 - 后续实现'); }
 function openMyPersona() { alert('我的人设 - 后续实现'); }
@@ -882,3 +1184,8 @@ function selectModel(type) {
         input.value = select.value;
     }
 }
+// 页面完全加载后再读取设置
+window.addEventListener('DOMContentLoaded', function() {
+    loadGlobalSettings();
+    loadChatSettings();
+});
