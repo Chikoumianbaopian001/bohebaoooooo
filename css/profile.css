@@ -251,3 +251,12 @@
 .cp-delete-btn:active {
     background: #fef0ef;
 }
+#page-my-persona {
+    background: #f5f5f5;
+    color: #333;
+}
+
+#page-my-persona.active {
+    display: flex !important;
+    flex-direction: column !important;
+}
