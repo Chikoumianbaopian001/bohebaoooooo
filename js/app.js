@@ -583,21 +583,32 @@ function loadGlobalSettings() {
 
 // ----- 聊天设置 保存/加载 -----
 function saveChatSettings() {
+    // ★ 先读取现有设置，保留 userPersonaId 不被覆盖
+    var existing = JSON.parse(localStorage.getItem('ai-phone-chat-settings') || '{}');
+    
     const cs = {
-    	nickname: document.getElementById('cs-nickname').value,
+        nickname: document.getElementById('cs-nickname').value,
         summaryWords: document.getElementById('cs-summary-words').value,
-        replyMin: document.getElementById('cs-reply-min').value, replyMax: document.getElementById('cs-reply-max').value,
+        replyMin: document.getElementById('cs-reply-min').value, 
+        replyMax: document.getElementById('cs-reply-max').value,
         memoryMode: document.querySelector('input[name="memory-mode"]:checked')?.value || 'manual',
         memoryCount: document.getElementById('cs-memory-count').value,
         translate: document.getElementById('cs-translate').checked,
-        autoMsg: document.getElementById('cs-auto-msg').checked, autoMsgValue: document.getElementById('cs-auto-msg-value').value, autoMsgUnit: document.getElementById('cs-auto-msg-unit').value,
+        autoMsg: document.getElementById('cs-auto-msg').checked, 
+        autoMsgValue: document.getElementById('cs-auto-msg-value').value, 
+        autoMsgUnit: document.getElementById('cs-auto-msg-unit').value,
         minimaxVoiceId: document.getElementById('cs-minimax-voice-id').value,
-        minimaxVoiceMsg: document.getElementById('cs-minimax-voice-msg').checked, minimaxCall: document.getElementById('cs-minimax-call').checked,
+        minimaxVoiceMsg: document.getElementById('cs-minimax-voice-msg').checked, 
+        minimaxCall: document.getElementById('cs-minimax-call').checked,
         imagePrompt: document.getElementById('cs-image-prompt').value,
-        timeAware: document.getElementById('cs-time-aware').checked, blockAi: document.getElementById('cs-block-ai').checked, allowBlock: document.getElementById('cs-allow-block').checked,
+        timeAware: document.getElementById('cs-time-aware').checked, 
+        blockAi: document.getElementById('cs-block-ai').checked, 
+        allowBlock: document.getElementById('cs-allow-block').checked,
+        userPersonaId: existing.userPersonaId || '',
     };
     localStorage.setItem('ai-phone-chat-settings', JSON.stringify(cs));
 }
+
 function loadChatSettings() {
     const saved = localStorage.getItem('ai-phone-chat-settings'); if (!saved) return;
     const s = JSON.parse(saved);
@@ -618,6 +629,16 @@ function loadChatSettings() {
     if (s.timeAware) document.getElementById('cs-time-aware').checked = true;
     if (s.blockAi) document.getElementById('cs-block-ai').checked = true;
     if (s.allowBlock) document.getElementById('cs-allow-block').checked = true;
+        // ★ 加载用户人设显示
+    if (s.userPersonaId) {
+        var nameEl = document.getElementById('cs-user-persona-name');
+        if (nameEl) {
+            var personas = getUserPersonas();
+            var p = personas.find(function(item) { return item.id === s.userPersonaId; });
+            if (p) nameEl.textContent = p.name;
+        }
+    }
+
 }
 
 (function() {
@@ -1117,8 +1138,6 @@ function openSearch() { alert('搜索功能 - 后续实现'); }
 function openAdd() { alert('添加功能 - 后续实现'); }
 
 function postMoment() { alert('发朋友圈 - 后续实现'); }
-function setMyAvatar() { alert('设置头像 - 后续实现'); }
-function openMyPersona() { alert('我的人设 - 后续实现'); }
 function openWallet() { alert('钱包 - 后续实现'); }
 function openFavorites() { alert('收藏 - 后续实现'); }
 function openWechatSettings() { alert('设置 - 后续实现'); }
